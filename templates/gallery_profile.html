@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="gallery-profile-wrapper">
+    <div class="gp-header">
+        <div class="gp-avatar-container">
+            <img src="{{ url_for('static', filename=target_user.profile_picture) }}" class="gp-avatar">
+        </div>
+        
+        <h1>{{ target_user.display_name or target_user.username }}</h1>
+        <p class="gp-handle">@{{ target_user.username }}</p>
+        
+        <div class="gp-social-stats">
+            <div class="stat-pill"><b>{{ posts|length }}</b> Posts</div>
+            <div class="stat-pill"><b>{{ likes }}</b> Total Likes</div>
+            <button class="btn-primary" onclick="addFriend('{{ target_user.id }}')">Add Friend</button>
+        </div>
+        
+        <p class="gp-bio">{{ target_user.bio or "No bio available." }}</p>
+    </div>
+
+    <hr class="gp-divider">
+
+    <div class="gp-grid">
+        {% for post in posts %}
+        <div class="gp-item" onclick="window.location.href='{{ url_for('community.gallery') }}'">
+            <img src="{{ url_for('static', filename=post.image_path) }}">
+            <div class="gp-item-overlay">
+                <span>👍 {{ post.likes }}</span>
+            </div>
+        </div>
+        {% else %}
+        <p class="empty-msg">No public catches shared yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .gallery-profile-wrapper { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .gp-header { text-align: center; margin-bottom: 30px; }
+    .gp-avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--primary); object-fit: cover; }
+    .gp-handle { color: #64748b; margin-top: -10px; }
+    .gp-social-stats { display: flex; justify-content: center; gap: 15px; margin: 15px 0; }
+    .stat-pill { background: #f1f5f9; padding: 6px 15px; border-radius: 20px; font-size: 0.9rem; }
+    .gp-divider { border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0; }
+    
+    .gp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+    .gp-item { position: relative; height: 200px; border-radius: 8px; overflow: hidden; cursor: pointer; }
+    .gp-item img { width: 100%; height: 100%; object-fit: cover; }
+    .gp-item-overlay { 
+        position: absolute; inset: 0; background: rgba(0,0,0,0.4); 
+        display: flex; align-items: center; justify-content: center; 
+        color: white; opacity: 0; transition: 0.3s;
+    }
+    .gp-item:hover .gp-item-overlay { opacity: 1; }
+</style>
+{% endblock %}
