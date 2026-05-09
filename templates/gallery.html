@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="gallery-container">
+    <div class="gallery-header">
+        <h2>Personal Catch Gallery</h2>
+        <button class="btn-primary" onclick="openModal('uploadModal')">+ Log New Catch</button>
+    </div>
+
+    <div class="image-grid">
+        {% for img in images %}
+        <div class="image-card" onclick="viewDetails('{{ img.id }}')">
+            <img src="{{ url_for('static', filename=img.image_path) }}" alt="Catch Image">
+            <div class="image-overlay">
+                <div class="overlay-title">{{ img.species or 'Unknown Species' }}</div>
+                <div class="overlay-meta">
+                    {% if img.temperature %}<span>{{ img.temperature }}°F</span>{% endif %}
+                    {% if img.moon_cycle %}<span>{{ img.moon_cycle }}</span>{% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Your gallery is currently empty. Start logging your fishing trips!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="uploadModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 700px;">
+        <h3 style="margin-top: 0;">Upload Catch Details</h3>
+        <form id="galleryForm" enctype="multipart/form-data">
+            
+            <fieldset>
+                <legend>Image & Species</legend>
+                <input type="file" name="file" accept="image/*" required>
+                <div class="grid-2">
+                    <input type="text" name="species" placeholder="Fish Species">
+                    <input type="text" name="lure_used" placeholder="Lure / Bait">
+                </div>
+            </fieldset>
+
+            <div class="grid-2">
+                <fieldset>
+                    <legend>Timing</legend>
+                    <select name="season">
+                        <option value="" disabled selected>Season</option>
+                        <option>Spring</option><option>Summer</option><option>Fall</option><option>Winter</option>
+                    </select>
+                    <select name="time_of_day">
+                        <option value="" disabled selected>Time of Day</option>
+                        <option>Dawn</option><option>Morning</option><option>Midday</option><option>Evening</option><option>Dusk</option><option>Night</option>
+                    </select>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Environment</legend>
+                    <input type="number" step="0.1" name="temperature" placeholder="Temp (°F)">
+                    <input type="number" step="0.01" name="pressure" placeholder="Pressure (inHg)">
+                </fieldset>
+            </div>
+
+            <fieldset>
+                <legend>Weather & Lunar</legend>
+                <div class="grid-2">
+                    <select name="cloud_cover">
+                        <option value="" disabled selected>Cloud Cover</option>
+                        <option>Clear</option><option>Partly Cloudy</option><option>Overcast</option><option>Stormy</option>
+                    </select>
+                    <select name="moon_cycle">
+                        <option value="" disabled selected>Moon Phase</option>
+                        <option>New Moon</option><option>Waxing Crescent</option><option>First Quarter</option>
+                        <option>Waxing Gibbous</option><option>Full Moon</option><option>Waning Gibbous</option>
+                        <option>Last Quarter</option><option>Waning Crescent</option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Additional Notes</legend>
+                <textarea name="notes" placeholder="Describe the fight, specific location, or conditions..." rows="3"></textarea>
+            </fieldset>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-primary" onclick="submitGalleryImage()">Save Catch</button>
+                <button type="button" class="btn-secondary" onclick="closeModal('uploadModal')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="detailsModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 850px; width: 95%;">
+        <div id="detailContent">
+
+        </div>
+        <div style="text-align: right; margin-top: 15px;">
+            <button class="btn-secondary" onclick="closeModal('detailsModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .gallery-container { padding: 10px; }
+    .gallery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .image-card {
+        position: relative;
+        height: 300px;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        background: #f1f5f9;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .image-card:hover { transform: scale(1.02); }
+    .image-card img { width: 100%; height: 100%; object-fit: cover; }
+
+    .image-overlay {
+        position: absolute; bottom: 0; left: 0; right: 0;
+        padding: 20px 15px 10px;
+        background: linear-gradient(transparent, rgba(0,0,0,0.85));
+        color: white;
+    }
+
+    .overlay-title { font-weight: bold; font-size: 1.1rem; }
+    .overlay-meta { display: flex; gap: 8px; margin-top: 8px; }
+    .overlay-meta span { 
+        font-size: 0.75rem; background: rgba(255,255,255,0.2); 
+        padding: 2px 8px; border-radius: 10px; backdrop-filter: blur(4px);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    textarea { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 10px; box-sizing: border-box; font-family: inherit; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-secondary { background: #64748b; color: white; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; }
+    
+    .empty-state { text-align: center; grid-column: 1 / -1; padding: 60px; color: #94a3b8; }
+
+    @media (max-width: 600px) {
+        .grid-2 { grid-template-columns: 1fr; }
+        .image-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
