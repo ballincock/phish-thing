@@ -13,7 +13,6 @@ class User(db.Model):
     backup_email = db.Column(db.String(120))
     mnemonic = db.Column(db.String(255), nullable=False)
 
-    # NEW COLUMNS
     display_name = db.Column(db.String(100))
     bio = db.Column(db.Text)
     profile_picture = db.Column(db.String(255), default='uploads/profiles/default.png')
