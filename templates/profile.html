@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="profile-wrapper">
+    <div class="profile-card">
+        <div class="pfp-container">
+            <img src="{{ url_for('static', filename=user.profile_picture) }}" alt="Avatar">
+        </div>
+
+        <h1>{{ user.display_name or user.username }}</h1>
+        <p class="handle">@{{ user.username }}</p>
+
+        {% if is_owner %}
+        <div class="owner-controls">
+            <button class="btn-primary" onclick="openModal('editProfileModal')">Edit Profile</button>
+        </div>
+        {% endif %}
+
+        <p class="bio">{{ user.bio or "No bio provided yet." }}</p>
+
+        <div class="social-links">
+            {% if user.reddit %}<span><b>Reddit:</b> {{ user.reddit }}</span>{% endif %}
+            {% if user.twitter %}<span><b>X:</b> {{ user.twitter }}</span>{% endif %}
+            {% if user.instagram %}<span><b>IG:</b> {{ user.instagram }}</span>{% endif %}
+        </div>
+
+        <div class="fishing-details">
+            <div class="detail-pill">🎣 {{ user.favorite_species or 'Species?' }}</div>
+            <div class="detail-pill">🏆 PB: {{ user.favorite_pb or '?' }}</div>
+            <div class="detail-pill">📍 {{ user.fishing_region or 'Region?' }}</div>
+        </div>
+    </div>
+</div>
+
+<div id="editProfileModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 600px;">
+        <h3>Update Profile</h3>
+        <form id="editProfileForm">
+            <fieldset>
+                <legend>New Avatar</legend>
+                <input type="file" name="file" accept="image/*">
+            </fieldset>
+
+            <fieldset>
+                <legend>General Info</legend>
+                <input type="text" name="display_name" value="{{ user.display_name or '' }}" placeholder="Display Name">
+                <textarea name="bio" placeholder="Bio">{{ user.bio or '' }}</textarea>
+            </fieldset>
+
+            <fieldset>
+                <legend>Social Media Tags</legend>
+                <div class="grid-2">
+                    <input type="text" name="reddit" value="{{ user.reddit or '' }}" placeholder="Reddit">
+                    <input type="text" name="twitter" value="{{ user.twitter or '' }}" placeholder="Twitter/X">
+                    <input type="text" name="instagram" value="{{ user.instagram or '' }}" placeholder="Instagram">
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Fishing Stats</legend>
+                <div class="grid-2">
+                    <input type="text" name="favorite_species" value="{{ user.favorite_species or '' }}" placeholder="Fav Species">
+                    <input type="text" name="favorite_pb" value="{{ user.favorite_pb or '' }}" placeholder="Personal Best">
+                    <input type="text" name="fishing_region" value="{{ user.fishing_region or '' }}" placeholder="Region">
+                </div>
+            </fieldset>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-primary" onclick="submitProfileUpdate()">Save Changes</button>
+                <button type="button" class="btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .profile-wrapper { display: flex; justify-content: center; padding: 40px 10px; }
+    .profile-card { text-align: center; max-width: 500px; width: 100%; }
+    
+    .pfp-container {
+        width: 160px; height: 160px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0 auto 20px;
+        border: 4px solid var(--primary);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .pfp-container img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .handle { color: #64748b; font-size: 0.9rem; margin-top: -15px; }
+    .social-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 15px 0; }
+    .social-links span { background: #f1f5f9; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; }
+    
+    .fishing-details { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
+    .detail-pill { background: #eef2ff; border: 1px solid #c3dafe; border-radius: 8px; padding: 10px; font-size: 0.85rem; }
+
+    @media (max-width: 500px) { .fishing-details { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
