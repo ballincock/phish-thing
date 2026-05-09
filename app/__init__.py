@@ -9,6 +9,7 @@ from app.blueprints.user import user_bp
 from app.blueprints.security import security_bp
 from app.blueprints.community import community_bp
 from app.blueprints.gallery_profile import gallery_profile_bp
+from app.blueprints.calcs import fishing_bp
 
 def create_app():
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
@@ -53,6 +54,7 @@ def create_app():
     app.register_blueprint(security_bp)
     app.register_blueprint(community_bp)
     app.register_blueprint(gallery_profile_bp)
+    app.register_blueprint(fishing_bp)
 
     with app.app_context():
         db.create_all()
