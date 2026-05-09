@@ -8,12 +8,12 @@ class GalleryService:
     def save_image(file, user_id):
         if not file or file.filename == '':
             return None
-
+        
         filename = secure_filename(file.filename)
-
+        
         timestamp = int(datetime.now().timestamp())
         unique_name = f"user_{user_id}_{timestamp}_{filename}"
-        
+
         upload_folder = os.path.join(current_app.static_folder, 'uploads', 'gallery')
         
         if not os.path.exists(upload_folder):
