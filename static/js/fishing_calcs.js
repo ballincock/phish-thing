@@ -767,7 +767,7 @@ async function runCalc(cid, step) {
    const formElement = document.getElementById('activeForm');
    formElement.innerHTML = `<h3 style="color:#00a8ff">Processing...</h3>`;
 
-   const res = await fetch('/fishing/process_fishing', {
+   const res = await fetch('/process_fishing', {
       method: 'POST',
       headers: {
          'Content-Type': 'application/json'
