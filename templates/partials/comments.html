@@ -1,0 +1,25 @@
+{% macro render_comment(comment, post_id) %}
+<div class="comment-block" style="margin-left: {{ '30px' if comment.parent_id else '0' }}; border-left: {{ '2px solid #e2e8f0' if comment.parent_id else 'none' }}; padding-left: 10px; margin-top: 10px;">
+    <div class="comment-header" style="display:flex; align-items:center; gap:8px; font-size: 0.85rem;">
+        <img src="{{ url_for('static', filename=comment.user.profile_picture) }}" style="width:24px; height:24px; border-radius:50%;">
+        <strong>{{ comment.user.display_name or comment.user.username }}</strong>
+    </div>
+    <p style="margin: 5px 0; font-size: 0.9rem;">{{ comment.text }}</p>
+    <button class="text-link" onclick="toggleReply('{{ comment.id }}')" style="font-size: 0.75rem; color: var(--primary); cursor:pointer; background:none; border:none; padding:0;">Reply</button>
+
+    <div id="reply-to-{{ comment.id }}" style="display:none; margin-top: 5px;">
+        <input type="text" id="input-{{ comment.id }}" placeholder="Write a reply..." style="font-size: 0.8rem; padding: 5px; width: 70%;">
+        <button class="btn-primary" style="padding: 4px 8px; font-size: 0.7rem;" onclick="sendComment({{ post_id }}, {{ comment.id }})">Send</button>
+    </div>
+
+    {% if comment.replies.all() %}
+        {% for reply in comment.replies %}
+            {{ render_comment(reply, post_id) }}
+        {% endfor %}
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% for comment in comments %}
+    {{ render_comment(comment, post_id) }}
+{% endfor %}
