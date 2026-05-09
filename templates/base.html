@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PYS Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://pyscript.net" />
+    <script defer src="https://pyscript.net"></script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2026.3.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2026.3.1/core.js"></script>
+</head>
+<body>
+    <div class="app-frame">
+        {% block nav %}
+            {% if request.endpoint != 'dash.index' %}
+                <div class="nav-back-wrapper">
+                    <button class="nav-back-btn" onclick="history.back()">← Back</button>
+                </div>
+            {% endif %}
+        {% endblock %}
+        <div class="content-area">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <div id="mnemonicModal" class="modal-overlay">
+        <div class="modal-box">
+            <h2>🔐 Account Secured</h2>
+            <p>Save this 16-word mnemonic safely. You cannot recover your account without it.</p>
+            <div id="mnemonicText" class="mnemonic-display"></div>
+            <button onclick="window.location.reload()" style="background: var(--primary); color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">I have saved my words</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
