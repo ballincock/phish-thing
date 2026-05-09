@@ -258,3 +258,211 @@ async function hardDelete() {
    if (result.success) window.location.href = '/register';
    else alert(result.error);
 }
+let currentPosts = [];
+let currentIndex = 0;
+
+function cycle(dir) {
+   if (posts.length <= 1) return;
+
+   currentIndex = (currentIndex + dir + posts.length) % posts.length;
+   renderCurrentPost();
+
+   const currentPostId = posts[currentIndex].id;
+   loadComments(currentPostId);
+}
+
+async function handleVote(postId, val) {
+   const res = await fetch('/community/vote', {
+      method: 'POST',
+      headers: {
+         'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+         post_id: postId,
+         vote: val
+      })
+   });
+   const data = await res.json();
+   currentPosts[currentIndex].likes = data.likes;
+   currentPosts[currentIndex].dislikes = data.dislikes;
+   renderCurrentPost();
+}
+
+async function postComment(postId) {
+   const input = document.getElementById(`comment-input-${postId}`);
+   const res = await fetch('/community/comment', {
+      method: 'POST',
+      headers: {
+         'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+         post_id: postId,
+         text: input.value
+      })
+   });
+   if (res.ok) {
+      input.value = '';
+   }
+}
+async function submitPublicPost() {
+   const form = document.getElementById('publicUploadForm');
+   if (!form) return console.error("Upload form not found!");
+
+   const formData = new FormData(form);
+
+   try {
+      const res = await fetch('/community/upload', {
+         method: 'POST',
+         body: formData
+      });
+
+      const result = await res.json();
+
+      if (res.ok && result.success) {
+         alert("Catch shared with the community!");
+         window.location.reload();
+      } else {
+         alert("Upload failed: " + (result.error || "Check your image and fields."));
+      }
+   } catch (err) {
+      console.error("Upload Error:", err);
+      alert("Server connection failed.");
+   }
+}
+
+async function handleVote(postId, val) {
+   const res = await fetch('/community/vote', {
+      method: 'POST',
+      headers: {
+         'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+         post_id: postId,
+         vote: val
+      })
+   });
+   const data = await res.json();
+
+   const activePost = posts.find(p => p.id === postId);
+   if (activePost) {
+      activePost.likes = data.likes;
+      activePost.dislikes = data.dislikes;
+      renderCurrentPost();
+   }
+}
+async function sendComment(postId, parentId = null) {
+   const inputId = parentId ? `input-${parentId}` : `main-comment-input-${postId}`;
+   const inputEl = document.getElementById(inputId);
+
+   if (!inputEl) {
+      console.error(`Could not find input element: ${inputId}`);
+      return;
+   }
+
+   const text = inputEl.value.trim();
+   if (!text) return;
+
+   const res = await fetch('/community/comment', {
+      method: 'POST',
+      headers: {
+         'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+         post_id: postId,
+         parent_id: parentId,
+         text: text
+      })
+   });
+
+   if (res.ok) {
+      inputEl.value = '';
+      loadComments(postId);
+   }
+}
+
+function showReplyInput(commentId) {
+   const box = document.getElementById(`reply-box-${commentId}`);
+   box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+async function loadComments(postId) {
+   const container = document.getElementById(`comments-container-${postId}`);
+
+   if (!container) return;
+
+   try {
+      const res = await fetch(`/community/get-comments/${postId}`);
+      const html = await res.text();
+      container.innerHTML = html;
+   } catch (err) {
+      console.error("Failed to load comments:", err);
+   }
+}
+
+function toggleReply(id) {
+   const box = document.getElementById(`reply-to-${id}`);
+   box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+async function sendComment(postId, parentId = null) {
+   const inputId = parentId ? `input-${parentId}` : `main-comment-input-${postId}`;
+   const inputEl = document.getElementById(inputId);
+
+   if (!inputEl) {
+      console.error("Input not found for ID:", inputId);
+      return;
+   }
+
+   const text = inputEl.value.trim();
+   if (!text) return;
+
+   const res = await fetch('/community/comment', {
+      method: 'POST',
+      headers: {
+         'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+         post_id: postId,
+         parent_id: parentId,
+         text: text
+      })
+   });
+
+   if (res.ok) {
+      inputEl.value = '';
+      loadComments(postId);
+   }
+}
+
+async function loadComments(postId) {
+   const id = `comments-container-${postId}`;
+   const container = document.getElementById(id);
+
+   if (!container) {
+      console.warn(`Target ID not found: ${id}. Retrying...`);
+      return;
+   }
+
+   try {
+      const res = await fetch(`/community/get-comments/${postId}`);
+      if (!res.ok) throw new Error("Comments fetch failed");
+      const html = await res.text();
+      container.innerHTML = html;
+   } catch (err) {
+      container.innerHTML = '<p style="color:red; font-size:0.8rem;">Could not load comments.</p>';
+   }
+}
+
+async function addFriend(targetId) {
+   const res = await fetch(`/friend/add/${targetId}`, {
+      method: 'POST',
+      headers: {
+         'Content-Type': 'application/json'
+      }
+   });
+   const data = await res.json();
+   if (data.success) {
+      alert(data.message);
+   } else {
+      alert(data.error);
+   }
+}
