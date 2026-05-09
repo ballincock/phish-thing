@@ -25,7 +25,7 @@
             <button class="dropbtn">Gallery ▾</button>
             <div class="dropdown-content">
                 <a href="{{ url_for('gallery.personal_gallery') }}">Personal Image Gallery</a>
-                <a href="#">Public Image Gallery</a>
+                <a href="{{ url_for('community.gallery') }}">Community Gallery</a>
             </div>
         </div>
 
@@ -78,7 +78,6 @@ from js import document
 def on_load():
     output = document.getElementById("output")
     if output:
-        # Using triple quotes prevents syntax errors from inner single/double quotes
         output.innerHTML = """<span style='color: #10b981;'>● Active - Secure Session Established</span>"""
 
 on_load()
