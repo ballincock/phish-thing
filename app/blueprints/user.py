@@ -7,7 +7,7 @@ user_bp = Blueprint('user', __name__)
 @user_bp.route('/profile/<username>')
 def view_profile(username):
     target_user = User.query.filter_by(username=username).first_or_404()
-    
+
     is_owner = False
     if 'user_id' in session and session['user_id'] == target_user.id:
         is_owner = True
@@ -32,7 +32,7 @@ def update_profile():
     user.instagram = request.form.get('instagram')
     user.youtube = request.form.get('youtube')
     user.facebook = request.form.get('facebook')
-
+    
     if 'file' in request.files:
         file = request.files['file']
         path = GalleryService.save_image(file, user.id)
