@@ -10,7 +10,6 @@ class GalleryImage(db.Model):
     image_path = db.Column(db.String(255), nullable=False)
     upload_date = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Metadata Fields
     species = db.Column(db.String(100))
     lure_used = db.Column(db.String(100))
     season = db.Column(db.String(50))
