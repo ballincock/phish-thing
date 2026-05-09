@@ -8,7 +8,7 @@ gallery_bp = Blueprint('gallery', __name__)
 def personal_gallery():
     if 'user_id' not in session:
         return redirect(url_for('dash.index'))
-
+    
     images = GalleryImage.query.filter_by(user_id=session['user_id']).order_by(GalleryImage.upload_date.desc()).all()
     return render_template('gallery.html', images=images)
 
@@ -19,7 +19,7 @@ def upload_image():
 
     user_id = session['user_id']
     file = request.files.get('file')
-
+    
     if not file:
         return jsonify({"error": "No image file provided"}), 400
 
@@ -27,7 +27,6 @@ def upload_image():
 
     if path:
         try:
-
             new_catch = GalleryImage(
                 user_id=user_id,
                 image_path=path,
@@ -44,11 +43,10 @@ def upload_image():
             db.session.add(new_catch)
             db.session.commit()
             return jsonify({"success": True, "path": path}), 200
-
+            
         except Exception as e:
             db.session.rollback()
             GalleryService.delete_image(path) 
-
             return jsonify({"error": f"Database error: {str(e)}"}), 500
 
     return jsonify({"error": "Failed to save file to server"}), 500
@@ -57,9 +55,9 @@ def upload_image():
 def image_details(img_id):
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
-
+    
     img = GalleryImage.query.get_or_404(img_id)
-
+    
     if img.user_id != session['user_id']:
         return jsonify({"error": "Forbidden"}), 403
 
