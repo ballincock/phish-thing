@@ -24,11 +24,20 @@ def register():
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    data = request.json
-    user = User.query.filter_by(username=data['username']).first()
-    
-    if user and CryptoService.verify_value(user.password_hash, data['password']):
-        session['user_id'] = user.id
-        return jsonify({"success": True})
-    
-    return jsonify({"error": "Invalid username or password"}), 401
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+            
+        user = User.query.filter_by(username=data.get('username')).first()
+        
+        if user and CryptoService.verify_value(user.password_hash, data.get('password')):
+            session['user_id'] = user.id
+            session['username'] = user.username
+            return jsonify({"success": True})
+        
+        return jsonify({"error": "Invalid credentials"}), 401
+        
+    except Exception as e:
+        print(f"DEBUG LOGIN ERROR: {str(e)}") 
+        return jsonify({"error": str(e)}), 500
