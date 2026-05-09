@@ -23,7 +23,6 @@
         <div class="dropdown">
             <button class="dropbtn">Gallery ▾</button>
             <div class="dropdown-content">
-                <!-- The dynamic Flask link -->
                 <a href="{{ url_for('gallery.personal_gallery') }}">Personal Image Gallery</a>
                 <a href="#">Public Image Gallery</a>
             </div>
@@ -43,8 +42,13 @@
         <div class="dropdown dropdown-right">
             <button class="dropbtn">Profile ▾</button>
             <div class="dropdown-content">
-                <a href="#view-profile">View Profile</a>
-                <a href="#edit-profile">Edit Profile</a>
+                {% if session.get('username') %}
+                    <a href="{{ url_for('user.view_profile', username=session.get('username')) }}">View Profile</a>
+                    <a href="javascript:void(0)" onclick="openModal('editProfileModal')">Edit Profile</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}">Login to View Profile</a>
+                {% endif %}
+                
                 <a href="#edit-security">Edit Security Settings</a>
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 4px 0;">
                 <a href="#messages">Direct Messages</a>
@@ -73,9 +77,31 @@ from js import document
 
 def on_load():
     output = document.getElementById("output")
-    output.innerHTML = "<span style='color: #10b981;'>● Active - Secure Session Established</span>"
+    if output:
+        output.innerHTML = "<span style='color: #10b981;'>● Active - Secure Session Established</span>"
 
 on_load()
 </py-script>
 
+<style>
+    .dropdown-right .dropdown-content {
+        right: 0;
+        left: auto;
+    }
+    
+    .dashboard-welcome {
+        max-width: 800px;
+        margin: 40px auto;
+        text-align: center;
+    }
+    
+    .module-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 24px;
+        margin-top: 30px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+</style>
 {% endblock %}
