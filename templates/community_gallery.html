@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% macro render_comments(comments, post_id) %}
+    {% for comment in comments %}
+        <div class="comment-item" style="margin-left: {{ '20px' if comment.parent_id else '0' }}">
+            <div class="comment-meta">
+                <img src="/static/{{ comment.user.profile_picture }}" class="avatar-xs">
+                <strong>{{ comment.user.display_name or comment.user.username }}</strong>
+                <span class="comment-date">{{ comment.created_at.strftime('%b %d') }}</span>
+            </div>
+            <p class="comment-text">{{ comment.text }}</p>
+            <button class="reply-btn" onclick="showReplyInput({{ comment.id }})">Reply</button>
+            
+            <div id="reply-box-{{ comment.id }}" class="reply-box" style="display:none;">
+                <input type="text" id="input-{{ comment.id }}" placeholder="Write a reply...">
+                <button onclick="sendComment({{ post_id }}, {{ comment.id }})">Send</button>
+            </div>
+
+            {% if comment.replies %}
+                {{ render_comments(comment.replies, post_id) }}
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endmacro %}
+
+{% block content %}
+<div class="community-layout">
+    <div class="community-header">
+        <div class="sort-pills">
+            <a href="?sort=new" class="pill {% if sort == 'new' %}active{% endif %}">New</a>
+            <a href="?sort=hot" class="pill {% if sort == 'hot' %}active{% endif %}">Hot</a>
+            <a href="?sort=top" class="pill {% if sort == 'top' %}active{% endif %}">Top</a>
+            <a href="?sort=random" class="pill {% if sort == 'random' %}active{% endif %}">Random</a>
+        </div>
+        <button class="btn-primary" onclick="openModal('publicUploadModal')">Share Catch</button>
+    </div>
+
+    <div class="carousel-container">
+        <button class="nav-arrow left" onclick="cycle(-1)">&#10094;</button>
+        
+        <div id="post-stage" class="post-stage">
+
+        </div>
+        
+        <button class="nav-arrow right" onclick="cycle(1)">&#10095;</button>
+    </div>
+</div>
+
+<div id="publicUploadModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 700px;">
+        <h3>Share Catch with Community</h3>
+        <form id="publicUploadForm" enctype="multipart/form-data">
+            <fieldset>
+                <legend>Image & Primary Info</legend>
+                <input type="file" name="file" accept="image/*" required>
+                <div class="grid-2">
+                    <input type="text" name="species" placeholder="Species">
+                    <input type="text" name="lure_used" placeholder="Lure / Bait Used">
+                </div>
+            </fieldset>
+
+            <div class="grid-2">
+                <fieldset>
+                    <legend>Timing & Environment</legend>
+                    <select name="time_of_day">
+                        <option value="" disabled selected>Time of Day</option>
+                        <option>Dawn</option><option>Morning</option>
+                        <option>Midday</option><option>Evening</option>
+                        <option>Night</option>
+                    </select>
+                    <input type="number" step="0.1" name="temperature" placeholder="Temp (°F)">
+                </fieldset>
+
+                <fieldset>
+                    <legend>Conditions</legend>
+                    <input type="number" step="0.01" name="pressure" placeholder="Pressure (inHg)">
+                    <select name="cloud_cover">
+                        <option value="" disabled selected>Cloud Cover</option>
+                        <option>Clear</option><option>Partly Cloudy</option>
+                        <option>Overcast</option><option>Stormy</option>
+                    </select>
+                </fieldset>
+            </div>
+
+            <fieldset>
+                <legend>Lunar & Story</legend>
+                <select name="moon_cycle">
+                    <option value="" disabled selected>Moon Phase</option>
+                    <option>New Moon</option><option>Waxing Crescent</option>
+                    <option>Full Moon</option><option>Waning Crescent</option>
+                </select>
+                <textarea name="notes" placeholder="Tell the story of the catch..." rows="3"></textarea>
+            </fieldset>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-primary" onclick="submitPublicPost()">Post to Community</button>
+                <button type="button" class="btn-secondary" onclick="closeModal('publicUploadModal')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    const posts = {{ posts|tojson }};
+
+    function renderCurrentPost() {
+    const post = posts[currentIndex];
+    const stage = document.getElementById('post-stage');
+    
+    if (!post) {
+        stage.innerHTML = '<p class="empty-msg">No posts to display.</p>';
+        return;
+    }
+
+    stage.innerHTML = `
+        <div class="social-card">
+            <div class="card-header" onclick="window.location.href='/gallery-profile/${post.username}'">
+                <img src="/static/${post.pfp}" class="avatar-sm">
+                <span class="username">${post.display_name}</span>
+            </div>
+            
+            <div class="image-box">
+                <img src="/static/${post.image_path}" class="main-img">
+            </div>
+
+            <!-- Vote & Social Actions -->
+            <div class="engagement-bar">
+                <button onclick="handleVote(${post.id}, 1)" class="vote-btn">👍 <span id="likes-${post.id}">${post.likes}</span></button>
+                <button onclick="handleVote(${post.id}, -1)" class="vote-btn">👎 <span id="dislikes-${post.id}">${post.dislikes}</span></button>
+            </div>
+
+            <!-- Metadata Tags -->
+            <div class="post-details">
+                <div class="tag-row">
+                    <span class="tag">🐟 ${post.species}</span>
+                    <span class="tag">🎣 ${post.lure_used}</span>
+                    <span class="tag">🌡️ ${post.temp}°F</span>
+                    <span class="tag">⏲️ ${post.time}</span>
+                    <span class="tag">🌙 ${post.moon}</span>
+                </div>
+                <p class="post-notes">${post.notes}</p>
+            </div>
+
+            <!-- Comment Section -->
+            <div class="comment-section">
+            <div class="comment-input-group">
+                <!-- IMPORTANT: The ID must have the -${post.id} suffix -->
+                <input type="text" id="main-comment-input-${post.id}" placeholder="Write a comment...">
+                <button class="btn-primary" onclick="sendComment(${post.id})">Post</button>
+            </div>
+            
+            <!-- IMPORTANT: The ID must match what loadComments looks for -->
+            <div id="comments-container-${post.id}" class="comments-list">
+                Loading comments...
+            </div>
+
+        </div>
+        </div>
+    `;
+    
+    loadComments(post.id);
+
+    window.requestAnimationFrame(() => {
+        setTimeout(() => {
+            loadComments(post.id);
+        }, 50); 
+    });
+
+    setTimeout(() => {
+        loadComments(post.id);
+    }, 150); 
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("Loaded posts:", posts);
+    if (posts.length > 0) {
+        renderCurrentPost();
+    } else {
+        document.getElementById('post-stage').innerHTML = '<p class="empty-msg">No community catches found yet.</p>';
+    }
+});
+
+</script>
+{% endblock %}
