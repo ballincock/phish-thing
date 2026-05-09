@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-wrapper" style="max-width: 600px;">
+    <h2 style="color:#fff;">Security Settings</h2>
+
+    <fieldset>
+        <legend>Change Password</legend>
+        <input type="password" id="new_pass" placeholder="New Password">
+        <input type="password" id="conf_pass" placeholder="Confirm New Password">
+        <button class="btn-primary" onclick="triggerUpdate('password')">Update Password</button>
+    </fieldset>
+
+    <fieldset>
+        <legend>Email Settings</legend>
+        <input type="email" id="set_email" value="{{ user.email }}" placeholder="Primary Email">
+        <input type="email" id="set_backup" value="{{ user.backup_email }}" placeholder="Backup Email">
+        <button class="btn-primary" onclick="triggerUpdate('email')">Update Emails</button>
+    </fieldset>
+
+    <fieldset>
+        <legend>Security Question</legend>
+        <select id="set_question">
+            <option selected>{{ user.security_question }}</option>
+            <option>What was your first car?</option>
+            <option>Name of your favorite teacher?</option>
+        </select>
+        <input type="text" id="set_answer" placeholder="New Answer">
+        <button class="btn-primary" onclick="triggerUpdate('qa')">Update Security Q&A</button>
+    </fieldset>
+
+    <button class="btn-danger" onclick="openModal('deleteModal')" style="margin-top: 40px; background: #ef4444; border-radius:8px; padding:8px; color:#fff;">Delete Account Forever</button>
+</div>
+
+<div id="verifyModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>Verify Mnemonic</h3>
+        <p>Enter your 16-word key to confirm these changes.</p>
+        <textarea id="verify_key" placeholder="Paste mnemonic here..." rows="3"></textarea>
+        <div class="modal-actions">
+            <button class="btn-primary" id="confirmBtn">Confirm Change</button>
+            <button class="btn-secondary" onclick="closeModal('verifyModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="deleteModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 style="color:red;">Hard Delete Account</h3>
+        <p>This action is irreversible. Type your username <b>{{ user.username }}</b> and mnemonic to proceed.</p>
+        <input type="text" id="del_user" placeholder="Confirm Username">
+        <textarea id="del_key" placeholder="Paste mnemonic here..." rows="3"></textarea>
+        <button class="btn-danger" onclick="hardDelete()">Permanently Delete</button>
+        <button class="btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+    </div>
+</div>
+{% endblock %}
