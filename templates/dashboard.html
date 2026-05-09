@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block nav %}
+<nav>
+    <div class="nav-group">
+        <div class="dropdown">
+            <button class="dropbtn">Map ▾</button>
+            <div class="dropdown-content">
+                <a href="#personal-map">Personal Map Log</a>
+                <a href="#community-map">Community Map Log</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <button class="dropbtn">Calculators ▾</button>
+            <div class="dropdown-content">
+                <a href="#fishing">Fishing Calculators</a>
+                <a href="#occupational">Occupational Calculators</a>
+                <a href="#math">Mathematic Calculators</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <button class="dropbtn">Gallery ▾</button>
+            <div class="dropdown-content">
+                <!-- The dynamic Flask link -->
+                <a href="{{ url_for('gallery.personal_gallery') }}">Personal Image Gallery</a>
+                <a href="#">Public Image Gallery</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <button class="dropbtn">Weather ▾</button>
+            <div class="dropdown-content">
+                <a href="#current-weather">Current Weather Report</a>
+                <a href="#historical-weather">Historical Weather Report</a>
+                <a href="#weather-predictions">Weather Based Predictions</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-right">
+        <div class="dropdown dropdown-right">
+            <button class="dropbtn">Profile ▾</button>
+            <div class="dropdown-content">
+                <a href="#view-profile">View Profile</a>
+                <a href="#edit-profile">Edit Profile</a>
+                <a href="#edit-security">Edit Security Settings</a>
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 4px 0;">
+                <a href="#messages">Direct Messages</a>
+                <a href="#support">Support</a>
+                <a href="#donate">Donate</a>
+                <a href="{{ url_for('dash.logout') }}" style="color: #ef4444; font-weight: bold;">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-welcome">
+    <h1>Welcome to PYS Platform</h1>
+    <p>Select a module from the navigation bar above to begin.</p>
+    
+    <div id="pyscript-container" class="module-card">
+        <h3>System Status</h3>
+        <div id="output">Initializing PyScript...</div>
+    </div>
+</div>
+
+<py-script>
+from js import document
+
+def on_load():
+    output = document.getElementById("output")
+    output.innerHTML = "<span style='color: #10b981;'>● Active - Secure Session Established</span>"
+
+on_load()
+</py-script>
+
+{% endblock %}
