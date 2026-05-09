@@ -1,59 +1,56 @@
 function openModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) modal.style.display = 'flex';
+   const modal = document.getElementById(id);
+   if (modal) modal.style.display = 'flex';
 }
 
 function closeModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) modal.style.display = 'none';
+   const modal = document.getElementById(id);
+   if (modal) modal.style.display = 'none';
 }
 
-window.onclick = function(event) {
-    if (event.target.classList.contains('modal-overlay')) {
-        event.target.style.display = 'none';
-    }
+window.onclick = function (event) {
+   if (event.target.classList.contains('modal-overlay')) {
+      event.target.style.display = 'none';
+   }
 };
 
 async function submitGalleryImage() {
-    const form = document.getElementById('galleryForm');
+   const form = document.getElementById('galleryForm');
+   const formData = new FormData(form);
 
-    const formData = new FormData(form);
+   try {
+      const response = await fetch('/gallery/upload', {
+         method: 'POST',
+         body: formData
+      });
 
-    try {
-        const response = await fetch('/gallery/upload', {
-            method: 'POST',
-            body: formData 
+      const result = await response.json();
 
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            alert("Catch logged successfully!");
-            window.location.reload(); 
-
-        } else {
-            alert("Error: " + (result.error || "Upload failed"));
-        }
-    } catch (err) {
-        console.error("Gallery Upload Error:", err);
-        alert("Server connection failed.");
-    }
+      if (result.success) {
+         alert("Catch logged successfully!");
+         window.location.reload();
+      } else {
+         alert("Error: " + (result.error || "Upload failed"));
+      }
+   } catch (err) {
+      console.error("Gallery Upload Error:", err);
+      alert("Server connection failed.");
+   }
 }
 
 async function viewDetails(imgId) {
-    try {
-        const response = await fetch(`/gallery/details/${imgId}`);
-        const data = await response.json();
+   try {
+      const response = await fetch(`/gallery/details/${imgId}`);
+      const data = await response.json();
 
-        if (data.error) {
-            alert(data.error);
-            return;
-        }
+      if (data.error) {
+         alert(data.error);
+         return;
+      }
 
-        const detailContent = document.getElementById('detailContent');
+      const detailContent = document.getElementById('detailContent');
 
-        detailContent.innerHTML = `
+      detailContent.innerHTML = `
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="detail-img-container">
                     <img src="/static/${data.image_path}" style="width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
@@ -75,132 +72,189 @@ async function viewDetails(imgId) {
             </div>
         `;
 
-        openModal('detailsModal');
-    } catch (err) {
-        console.error("Fetch Detail Error:", err);
-        alert("Could not load catch details.");
-    }
+      openModal('detailsModal');
+   } catch (err) {
+      console.error("Fetch Detail Error:", err);
+      alert("Could not load catch details.");
+   }
 }
 async function submitProfileUpdate() {
-    const form = document.getElementById('editProfileForm');
-    const formData = new FormData(form);
+   const form = document.getElementById('editProfileForm');
+   const formData = new FormData(form);
 
-    const response = await fetch('/profile/update', {
-        method: 'POST',
-        body: formData
-    });
+   const response = await fetch('/profile/update', {
+      method: 'POST',
+      body: formData
+   });
 
-    const result = await response.json();
-    if (result.success) {
-        window.location.reload();
-    } else {
-        alert("Failed to update profile.");
-    }
+   const result = await response.json();
+   if (result.success) {
+      window.location.reload();
+   } else {
+      alert("Failed to update profile.");
+   }
 }
 
-async function handleLogin() { 
+async function handleLogin() {
+   const userEl = document.getElementById('login-username');
+   const passEl = document.getElementById('login-password');
 
-    const userEl = document.getElementById('login-username');
-    const passEl = document.getElementById('login-password');
+   if (!userEl || !passEl) return alert("Fields missing");
 
-    if(!userEl || !passEl) return alert("Fields missing");
+   const data = {
+      username: userEl.value,
+      password: passEl.value
+   };
 
-    const data = { username: userEl.value, password: passEl.value };
+   const response = await fetch('/login', {
+      method: 'POST',
+      headers: {
+         'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+   });
 
-    const response = await fetch('/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    });
-
-    const result = await response.json();
-    if (result.success) {
-        window.location.reload(); 
-
-    } else {
-        alert(result.error || "Login failed");
-    }
+   const result = await response.json();
+   if (result.success) {
+      window.location.reload();
+   } else {
+      alert(result.error || "Login failed");
+   }
 }
 
 function toggleAuth(view) {
-    const loginForm = document.getElementById('login-form');
-    const regForm = document.getElementById('register-form');
-    const loginBtn = document.getElementById('btn-login-view');
-    const regBtn = document.getElementById('btn-reg-view');
+   const loginForm = document.getElementById('login-form');
+   const regForm = document.getElementById('register-form');
+   const loginBtn = document.getElementById('btn-login-view');
+   const regBtn = document.getElementById('btn-reg-view');
 
-    if (view === 'login') {
-        loginForm.style.display = 'block';
-        regForm.style.display = 'none';
-        loginBtn.classList.add('active');
-        regBtn.classList.remove('active');
-    } else {
-        loginForm.style.display = 'none';
-        regForm.style.display = 'block';
-        loginBtn.classList.remove('active');
-        regBtn.classList.add('active');
-    }
+   if (view === 'login') {
+      loginForm.style.display = 'block';
+      regForm.style.display = 'none';
+      loginBtn.classList.add('active');
+      regBtn.classList.remove('active');
+   } else {
+      loginForm.style.display = 'none';
+      regForm.style.display = 'block';
+      loginBtn.classList.remove('active');
+      regBtn.classList.add('active');
+   }
+}
+async function handleRegister() {
+   const fields = {
+      username: 'reg-username',
+      email: 'reg-email',
+      password: 'reg-password',
+      confirm: 'reg-confirm',
+      question: 'reg-question',
+      answer: 'reg-answer',
+      backup_email: 'reg-backup'
+   };
+
+   const data = {};
+
+   for (const [key, id] of Object.entries(fields)) {
+      const el = document.getElementById(id);
+      if (!el) {
+         console.error(`Error: Element with ID "${id}" missing from the page.`);
+         return;
+      }
+      data[key] = el.value.trim();
+   }
+
+   if (!data.username || !data.email || !data.password || !data.answer) {
+      alert("Please fill in all required fields (Username, Email, Password, and Security Answer).");
+      return;
+   }
+
+   if (data.password !== data.confirm) {
+      alert("Passwords do not match!");
+      return;
+   }
+
+   try {
+      const response = await fetch('/register', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json'
+         },
+         body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.mnemonic) {
+         const modal = document.getElementById('mnemonicModal');
+         const textDisplay = document.getElementById('mnemonicText');
+
+         if (modal && textDisplay) {
+            textDisplay.innerText = result.mnemonic;
+            modal.style.display = 'flex';
+         } else {
+            alert("Account created! Your mnemonic is: " + result.mnemonic);
+         }
+      } else {
+         alert(result.error || "Registration failed. Please try again.");
+      }
+   } catch (err) {
+      console.error("Fetch Error:", err);
+      alert("Could not connect to the server. Check your internet or CSP settings.");
+   }
+}
+let activeType = null;
+
+function triggerUpdate(type) {
+   activeType = type;
+   openModal('verifyModal');
+   document.getElementById('confirmBtn').onclick = processSecurityUpdate;
 }
 
-async function handleRegister() {
+async function processSecurityUpdate() {
+   const mnemonic = document.getElementById('verify_key').value;
+   let payload = {
+      type: activeType,
+      mnemonic: mnemonic
+   };
 
-    const fields = {
-        username: 'reg-username',
-        email: 'reg-email',
-        password: 'reg-password',
-        confirm: 'reg-confirm',
-        question: 'reg-question',
-        answer: 'reg-answer',
-        backup_email: 'reg-backup'
-    };
+   if (activeType === 'password') {
+      payload.val = document.getElementById('new_pass').value;
+      payload.confirm = document.getElementById('conf_pass').value;
+   } else if (activeType === 'email') {
+      payload.email = document.getElementById('set_email').value;
+      payload.backup = document.getElementById('set_backup').value;
+   } else if (activeType === 'qa') {
+      payload.question = document.getElementById('set_question').value;
+      payload.answer = document.getElementById('set_answer').value;
+   }
 
-    const data = {};
+   const response = await fetch('/settings/update-field', {
+      method: 'POST',
+      headers: {
+         'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+   });
 
-    for (const [key, id] of Object.entries(fields)) {
-        const el = document.getElementById(id);
-        if (!el) {
-            console.error(`Error: Element with ID "${id}" missing from the page.`);
-            return;
-        }
-        data[key] = el.value.trim();
-    }
+   const result = await response.json();
+   alert(result.message || result.error);
+   if (result.success) window.location.reload();
+}
 
-    if (!data.username || !data.email || !data.password || !data.answer) {
-        alert("Please fill in all required fields (Username, Email, Password, and Security Answer).");
-        return;
-    }
+async function hardDelete() {
+   const payload = {
+      confirm_user: document.getElementById('del_user').value,
+      mnemonic: document.getElementById('del_key').value
+   };
 
-    if (data.password !== data.confirm) {
-        alert("Passwords do not match!");
-        return;
-    }
+   const response = await fetch('/settings/delete-account', {
+      method: 'POST',
+      headers: {
+         'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+   });
 
-    try {
-        const response = await fetch('/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.mnemonic) {
-
-            const modal = document.getElementById('mnemonicModal');
-            const textDisplay = document.getElementById('mnemonicText');
-
-            if (modal && textDisplay) {
-                textDisplay.innerText = result.mnemonic;
-                modal.style.display = 'flex'; 
-
-            } else {
-                alert("Account created! Your mnemonic is: " + result.mnemonic);
-            }
-        } else {
-
-            alert(result.error || "Registration failed. Please try again.");
-        }
-    } catch (err) {
-        console.error("Fetch Error:", err);
-        alert("Could not connect to the server. Check your internet or CSP settings.");
-    }
+   const result = await response.json();
+   if (result.success) window.location.href = '/register';
+   else alert(result.error);
 }
