@@ -3,6 +3,7 @@
 {% block nav %}
 <nav>
     <div class="nav-group">
+
         <div class="dropdown">
             <button class="dropbtn">Map ▾</button>
             <div class="dropdown-content">
@@ -44,12 +45,11 @@
             <div class="dropdown-content">
                 {% if session.get('username') %}
                     <a href="{{ url_for('user.view_profile', username=session.get('username')) }}">View Profile</a>
-                    <a href="javascript:void(0)" onclick="openModal('editProfileModal')">Edit Profile</a>
+                    <a href="{{ url_for('security.settings') }}">Edit Security Settings</a>
                 {% else %}
-                    <a href="{{ url_for('auth.login') }}">Login to View Profile</a>
+                    <a href="{{ url_for('auth.login') }}">Login to View or Edit Profile</a>
                 {% endif %}
                 
-                <a href="#edit-security">Edit Security Settings</a>
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 4px 0;">
                 <a href="#messages">Direct Messages</a>
                 <a href="#support">Support</a>
@@ -78,7 +78,8 @@ from js import document
 def on_load():
     output = document.getElementById("output")
     if output:
-        output.innerHTML = "<span style='color: #10b981;'>● Active - Secure Session Established</span>"
+        # Using triple quotes prevents syntax errors from inner single/double quotes
+        output.innerHTML = """<span style='color: #10b981;'>● Active - Secure Session Established</span>"""
 
 on_load()
 </py-script>
