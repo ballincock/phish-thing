@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://pyscript.net/releases/2026.3.1/core.css">
     <script type="module" src="https://pyscript.net/releases/2026.3.1/core.js"></script>
 </head>
-<body>
+<body style="background: url('{{ url_for('static', filename='css/sigh.jpg') }}'); background-size: cover;">
     <div class="app-frame">
         {% block nav %}
             {% if request.endpoint != 'dash.index' %}
