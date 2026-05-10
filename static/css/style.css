@@ -1,7 +1,7 @@
 :root{--bg:#0f172a;--card:#fff;--primary:#E5509B;--text-dark:#1e293b;--nav-bg:#252525;--border:#252525}
 body{-ms-overflow-style:none;scrollbar-width:none;&::-webkit-scrollbar {;display:none}
 .app-frame{-ms-overflow-style:none;scrollbar-width:none;&::-webkit-scrollbar {;display:none}
-.content-area{-ms-overflow-style:none;scrollbar-width:none;&::-webkit-scrollbar {;display:none}
+.content-area{-ms-overflow-style:none;scrollbar-width:none;overflow:hidden;&::-webkit-scrollbar {;display:none}
 .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none;&::-webkit-scrollbar {;display:none}
 nav{background:var(--nav-bg);display:flex;padding:10px 20px;gap:15px;align-items:center;color:#fff}
 .nav-group{display:flex;gap:15px}
@@ -25,6 +25,7 @@ nav{flex-direction:column;align-items:flex-start}
 .auth-toggle button{flex:1;border:none;padding:10px;cursor:pointer;background:none;border-radius:6px;font-weight:600;transition:.3s}
 .auth-toggle button.active{background:var(--primary);color:#fff}
 .btn-primary{width:100%;padding:15px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer}
+.btn-secondary{position:absolute;top:25px;left:25px;padding:8px 15px;background:#1c1f2b;color:#00a8ff;border:1px solid #2c3142;border-radius:8px;text-decoration:none;font-size:.75em;font-weight:700;text-transform:uppercase;letter-spacing:1px;transition:all .3s ease}
 .auth-wrapper{-ms-overflow-style:none;scrollbar-width:none;&::-webkit-scrollbar {;display:none}
 @media (max-width: 600px) {
 .auth-wrapper{-ms-overflow-style:none;scrollbar-width:none;&::-webkit-scrollbar {;display:none}
@@ -33,7 +34,7 @@ nav{flex-direction:column;align-items:flex-start}
 .nav-right{margin-left:auto;display:flex;gap:10px}
 .dropdown-content::before{content:"";position:absolute;top:-5px;right:15px;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:5px solid #fff}
 .dashboard-welcome{max-width:800px;margin:40px auto;text-align:center}
-.module-card{-ms-overflow-style:none;scrollbar-width:none;&::-webkit-scrollbar {;display:none}
+.module-card{-ms-overflow-style:none;scrollbar-width:none;overflow:hidden;&::-webkit-scrollbar {;display:none}
 h1{color:#333;font-size:2rem;margin-bottom:10px}
 h2{color:#fff}
 p{color:#333;font-size:1.1rem}
@@ -43,6 +44,7 @@ h1{font-size:1.5rem}
 }
 .nav-back-wrapper{display:flex;align-items:center;padding-right:10px;border-right:1px solid #334155;margin-right:10px}
 .nav-back-btn{background:#252525;color:#fff;border:1px solid #252525;border-radius:6px;padding:6px 12px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+button{background:#252525;color:#fff;border:1px solid #252525;border-radius:6px;padding:6px 12px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
 .nav-back-btn:hover{background:var(--primary);border-color:var(--primary);color:#fff}
 @media (max-width: 600px) {
 .nav-back-wrapper{border-right:none;margin-bottom:10px;width:100%}
@@ -66,5 +68,5 @@ h1{font-size:1.5rem}
 .tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
 .tag{background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;border:1px solid #e2e8f0}
 .engagement-bar{display:flex;gap:15px;padding:15px;border-top:1px solid #f1f5f9}
-.vote-btn{background:none;border:1px solid #e2e8f0;padding:6px 15px;border-radius:8px;cursor:pointer;transition:.2s}
+.vote-btn{background:none;border:1px solid #e2e8f0;padding:6px 15px;border-radius:8px;cursor:pointer;color:#333;transition:.2s}
 .vote-btn:hover{background:#f8fafc}
