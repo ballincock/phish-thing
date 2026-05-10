@@ -11,15 +11,19 @@
     <script type="module" src="https://pyscript.net/releases/2026.3.1/core.js"></script>
 </head>
 <body style="background: url('{{ url_for('static', filename='css/sigh.jpg') }}'); background-size: cover;">
-    <div class="app-frame">
+    <div class="app-frame" style="    ms-overflow-style:none !important;
+    scrollbar-width:none !important;
+    overflow-y:scroll !important;">
         {% block nav %}
             {% if request.endpoint != 'dash.index' %}
                 <div class="nav-back-wrapper">
-                    <button class="nav-back-btn" onclick="history.back()">← Back</button>
+                    <button class="nav-back-btn" onclick="history.back()" href="/">← Back</button>
                 </div>
             {% endif %}
         {% endblock %}
-        <div class="content-area">
+        <div class="content-area" style="    ms-overflow-style:none !important;
+    scrollbar-width:none !important;
+    overflow-y:scroll !important;">
             {% block content %}{% endblock %}
         </div>
     </div>
@@ -34,5 +38,6 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/fishing_calcs.js') }}"></script>
 </body>
 </html>
