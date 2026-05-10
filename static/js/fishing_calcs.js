@@ -679,7 +679,7 @@ function renderGrid() {
       const s = calcConfig[cid][currentStepKey];
 
       btn.innerHTML = `
-                    <span style="font-size:0.7em; color:#8f94a8; text-transform:uppercase;">${calcConfig[cid].name}</span>
+                    <span style="font-size:0.7em; color:#fff; text-transform:uppercase;">${calcConfig[cid].name}</span>
                     <span style="margin-top:5px;">${s.title}</span>
                     <div class="cycle-dots">
                         <div class="dot ${cycleState[cid] === 0 ? 'active' : ''}"></div>
@@ -703,8 +703,8 @@ function openModal(cid, step) {
    const s = calcConfig[cid][step];
    let html = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 style="color:#00a8ff; margin:0;">${s.title}</h3>
-            <span style="color:#4e5467; font-size:0.7em; font-weight:bold;">${calcConfig[cid].name.toUpperCase()}</span>
+            <h3 style="color:#fff; margin:0;">${s.title}</h3>
+            <span style="color:#fff; font-size:0.7em; font-weight:bold;">${calcConfig[cid].name.toUpperCase()}</span>
         </div>
         <form id="activeForm">`;
 
@@ -720,7 +720,7 @@ function openModal(cid, step) {
                 <div style="display:flex; align-items:center; gap:10px;">
                     <input type="range" id="${field.id}" min="${field.min}" max="${field.max}" step="${field.step}" 
                            class="calc-input" style="flex:1;" oninput="this.nextElementSibling.value = this.value">
-                    <output style="color:#00a8ff; font-weight:bold; width:30px;">${field.min}</output>
+                    <output style="color:#fff; font-weight:bold; width:30px;">${field.min}</output>
                 </div>`;
       } else {
          html += `<input type="${field.t}" id="${field.id}" placeholder="${field.placeholder || ''}" class="calc-input">`;
@@ -781,7 +781,7 @@ async function runCalc(cid, step) {
    const json = await res.json();
 
    formElement.innerHTML = `
-        <h3 style="color:#00a8ff">Results</h3>
+        <h3 style="color:#fff">Results</h3>
         <pre>${json.result}</pre>
         <div class="modal-footer">
             <button type="button" class="btn-run" onclick="closeModal()">Finish</button>
