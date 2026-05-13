@@ -666,130 +666,138 @@ const calcConfig = {
 };
 
 function renderGrid() {
-   const grid = document.getElementById('button-grid');
-   grid.innerHTML = '';
-
-   for (let cid in calcConfig) {
-      const btn = document.createElement('button');
-      btn.className = 'grid-btn';
-      btn.id = `btn-cat-${cid}`;
-
-      const steps = Object.keys(calcConfig[cid]).filter(k => k !== 'name');
-      const currentStepKey = steps[cycleState[cid]];
-      const s = calcConfig[cid][currentStepKey];
-
-      btn.innerHTML = `
-                    <span style="font-size:0.7em; color:#fff; text-transform:uppercase;">${calcConfig[cid].name}</span>
-                    <span style="margin-top:5px;">${s.title}</span>
-                    <div class="cycle-dots">
-                        <div class="dot ${cycleState[cid] === 0 ? 'active' : ''}"></div>
-                        <div class="dot ${cycleState[cid] === 1 ? 'active' : ''}"></div>
-                        <div class="dot ${cycleState[cid] === 2 ? 'active' : ''}"></div>
-                    </div>
-                `;
-
-      btn.onclick = () => {
-         openModal(cid, currentStepKey);
-
-         cycleState[cid] = (cycleState[cid] + 1) % 3;
-         renderGrid();
-
-      };
-      grid.appendChild(btn);
-   }
+    const grid = document.getElementById('button-grid');
+    if (!grid) return; 
+    grid.innerHTML = '';
+    
+    for (let cid in calcConfig) {
+        const btn = document.createElement('button');
+        btn.className = 'grid-btn';
+        btn.id = `btn-cat-${cid}`;
+        const steps = Object.keys(calcConfig[cid]).filter(k => k !== 'name');
+        const currentStepKey = steps[cycleState[cid]];
+        const s = calcConfig[cid][currentStepKey];
+        
+        btn.innerHTML = `
+            <span style="font-size:0.7em; color:#fff; text-transform:uppercase;">${calcConfig[cid].name}</span>
+            <span style="margin-top:5px;">${s.title}</span>
+            <div class="cycle-dots">
+                <div class="dot ${cycleState[cid] === 0 ? 'active' : ''}"></div>
+                <div class="dot ${cycleState[cid] === 1 ? 'active' : ''}"></div>
+                <div class="dot ${cycleState[cid] === 2 ? 'active' : ''}"></div>
+            </div>
+        `;
+        
+        btn.onclick = () => {
+            openModal(cid, currentStepKey);
+            cycleState[cid] = (cycleState[cid] + 1) % 3;
+            renderGrid();
+        };
+        grid.appendChild(btn);
+    }
 }
 
 function openModal(cid, step) {
-   const s = calcConfig[cid][step];
-   let html = `
+    const s = calcConfig[cid][step];
+    let html = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h3 style="color:#fff; margin:0;">${s.title}</h3>
             <span style="color:#fff; font-size:0.7em; font-weight:bold;">${calcConfig[cid].name.toUpperCase()}</span>
         </div>
         <form id="activeForm">`;
-
-   s.f.forEach(field => {
-      html += `<div class="form-group"><label>${field.l}</label>`;
-
-      if (field.t === 'select') {
-         html += `<select id="${field.id}" class="calc-input">`;
-         field.o.forEach(opt => html += `<option value="${opt}">${opt}</option>`);
-         html += `</select>`;
-      } else if (field.t === 'range') {
-         html += `
+        
+    s.f.forEach(field => {
+        html += `<div class="form-group"><label>${field.l}</label>`;
+        if (field.t === 'select') {
+            html += `<select id="${field.id}" class="calc-input">`;
+            field.o.forEach(opt => html += `<option value="${opt}">${opt}</option>`);
+            html += `</select>`;
+        } else if (field.t === 'range') {
+            html += `
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <input type="range" id="${field.id}" min="${field.min}" max="${field.max}" step="${field.step}" 
-                           class="calc-input" style="flex:1;" oninput="this.nextElementSibling.value = this.value">
+                    <input type="range" id="${field.id}" min="${field.min}" max="${field.max}" step="${field.step}" class="calc-input" style="flex:1;" oninput="this.nextElementSibling.value = this.value">
                     <output style="color:#fff; font-weight:bold; width:30px;">${field.min}</output>
                 </div>`;
-      } else {
-         html += `<input type="${field.t}" id="${field.id}" placeholder="${field.placeholder || ''}" class="calc-input">`;
-      }
-      html += `</div>`;
-   });
-
-   html += `
+        } else {
+            html += `<input type="${field.t}" id="${field.id}" placeholder="${field.placeholder || ''}" class="calc-input">`;
+        }
+        html += `</div>`;
+    });
+    
+    html += `
         <div class="modal-footer">
             <button type="button" class="btn-cycle" onclick="cycleInModal('${cid}')">🔄 Next Mode</button>
             <button type="button" class="btn-run" onclick="runCalc('${cid}', '${step}')">Run Logic</button>
         </div>
         <button type="button" class="btn-close" onclick="closeModal()" style="width:100%; margin-top:15px; color:#fff; cursor:pointer; border:none; background:none;">Back to Grid</button>
     </form>`;
-
-   document.getElementById('modal-body').innerHTML = html;
-   document.getElementById('calcModal').classList.add('show');
-
-   html += `
-        <!--<button type="button" class="btn-run" onclick="runCalc('${cid}', '${step}')">Run Calculation</button>-->
-        <button type="button" class="back-home" onclick="closeModal()">Back</button>
-    </form>`;
-
-   document.getElementById('modal-body').innerHTML = html;
-   document.getElementById('calcModal').classList.add('show');
+    
+    document.getElementById('modal-body').innerHTML = html;
+    document.getElementById('calcModal').classList.add('show');
 }
 
 function cycleInModal(cid) {
-
-   cycleState[cid] = (cycleState[cid] + 1) % 3;
-
-   const steps = Object.keys(calcConfig[cid]).filter(k => k !== 'name');
-   const nextStepKey = steps[cycleState[cid]];
-
-   renderGrid();
-   openModal(cid, nextStepKey);
+    cycleState[cid] = (cycleState[cid] + 1) % 3;
+    const steps = Object.keys(calcConfig[cid]).filter(k => k !== 'name');
+    const nextStepKey = steps[cycleState[cid]];
+    renderGrid();
+    openModal(cid, nextStepKey);
 }
 
 async function runCalc(cid, step) {
-   const s = calcConfig[cid][step];
-   const data = {};
-   s.f.forEach(f => data[f.id] = document.getElementById(f.id).value);
-
-   const formElement = document.getElementById('activeForm');
-   formElement.innerHTML = `<h3 style="color:#00a8ff">Processing...</h3>`;
-
-   const res = await fetch('/process_fishing', {
-      method: 'POST',
-      headers: {
-         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-         cid,
-         step,
-         data
-      })
-   });
-   const json = await res.json();
-
-   formElement.innerHTML = `
-        <h3 style="color:#fff">Results</h3>
-        <pre>${json.result}</pre>
-        <div class="modal-footer">
-            <button type="button" class="btn-run" onclick="closeModal()">Finish</button>
-        </div>
-    `;
+    const s = calcConfig[cid][step];
+    const data = {};
+    s.f.forEach(f => data[f.id] = document.getElementById(f.id).value);
+    
+    const formElement = document.getElementById('activeForm');
+    formElement.innerHTML = `<h3 style="color:#E5509B">Processing...</h3>`;
+    
+    try {
+        const res = await fetch('/process_fishing', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cid, step, data })
+        });
+        
+        const json = await res.json();
+        
+        if (json.success === false || json.error || (typeof json === 'string' && json.startsWith("System Error"))) {
+            const errorMsg = json.error || json.results || json;
+            formElement.innerHTML = `
+                <h3 style="color:#fff">System Error</h3>
+                <pre style="background:#1e1e1e; color:#ff6b6b; padding:15px; border-radius:6px; white-space:pre-wrap; font-family:monospace; text-align:left;">${errorMsg}</pre>
+                <div class="modal-footer" style="margin-top:20px;">
+                    <button type="button" class="btn-run" onclick="closeModal()">Close</button>
+                </div>`;
+            return;
+        }
+        
+        const outputData = json.results || json.result || json;
+        
+        formElement.innerHTML = `
+            <h3 style="color:#fff; margin-bottom:15px;">Results</h3>
+            <pre style="background:#1e1e1e; color:#fff; padding:15px; border-radius:6px; white-space:pre-wrap; font-family:monospace; text-align:left;">${outputData}</pre>
+            <div class="modal-footer" style="margin-top:20px; display:flex; justify-content:flex-end;">
+                <button type="button" class="btn-run" onclick="closeModal()">Finish</button>
+            </div>
+        `;
+    } catch (err) {
+        formElement.innerHTML = `
+            <h3 style="color:#fff">Network Exception</h3>
+            <pre style="background:#1e1e1e; color:#ff6b6b; padding:15px; border-radius:6px; white-space:pre-wrap; font-family:monospace; text-align:left;">${err.message}</pre>
+            <div class="modal-footer" style="margin-top:20px;">
+                <button type="button" class="btn-run" onclick="closeModal()">Close</button>
+            </div>`;
+    }
 }
 
 function closeModal() {
-   document.getElementById('calcModal').classList.remove('show');
+    document.getElementById('calcModal').classList.remove('show');
+    renderGrid();
 }
-renderGrid();
+
+document.addEventListener("DOMContentLoaded", () => {
+    if(document.getElementById('button-grid')) {
+        renderGrid();
+    }
+});
