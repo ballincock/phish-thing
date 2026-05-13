@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="module-card">
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+        <div style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--primary); background: #444; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+            📜
+        </div>
+        <div>
+            <h1 style="color: #333;margin: 0; font-size: 1.8rem;">📜 Historical Climate Log</h1>
+            <p style="margin: 2px 0 0 0; font-size: 0.95rem; color: #333;">
+                Analyst: <strong style="color: var(--primary);">{{ user.display_name or user.username }}</strong>
+                {% if user.fishing_region %} | Home Region: <span style="color:#333; font-weight:bold;">{{ user.fishing_region }}</span>{% endif %}
+            </p>
+        </div>
+    </div>
+
+    <form id="historicalQueryForm" onsubmit="dispatchHistoricalQuery(event)" style="margin-top: 20px;">
+        <fieldset>
+            <legend>Target Coordinates</legend>
+            <input type="text" id="histLocationInput" placeholder="e.g. Chicago, Paris, Key West" value="{{ user.fishing_region or '' }}" required>
+        </fieldset>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <fieldset>
+                <legend>Start Date</legend>
+                <input type="date" id="histStartDate" required style="color:#fff; background:#252525;">
+            </fieldset>
+            <fieldset>
+                <legend>End Date</legend>
+                <input type="date" id="histEndDate" required style="color:#fff; background:#252525;">
+            </fieldset>
+        </div>
+        
+        <button type="submit" id="submitHistBtn" class="btn-primary" style="margin-top: 10px;">Query Historical Logs</button>
+    </form>
+
+    <div id="historicalSpinner" style="display: none; margin-top: 20px; color: var(--primary); font-weight: bold; text-align: center;">
+        ⏳ Compiling climate tracking records from visual archives...
+    </div>
+
+    <div id="histErrorBox" style="display: none; background: rgba(229, 80, 155, 0.15); border: 1px solid var(--primary); padding: 15px; border-radius: 8px; margin-top: 20px; color: #333; font-size: 0.95rem;"></div>
+
+    <div id="historicalPresentationArea" style="display: none; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
+        <h2 id="resolvedHistLocationHeader" style="color: #333;">📍 Region Profile: </h2>
+        <p style="font-size: 0.9rem; color: #333; margin-top: -5px; margin-bottom: 20px;" id="resolvedHistTimezone"></p>
+
+        <h2 style="font-size: 1.3rem; margin-bottom: 12px; color:#333;">📋 Range Summary Metrics</h2>
+        <p id="rangeOverviewParagraph" style="font-size: 1rem; color: #333; line-height: 1.4; margin-bottom: 20px;"></p>
+
+        <h2 style="font-size: 1.3rem; margin-bottom: 12px;color: #333;">📅 Daily Observations Log</h2>
+        <div id="historicalDaysContainer" style="display: flex; flex-direction: column; gap: 12px;"></div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/historical_weather.js') }}"></script>
+{% endblock %}
