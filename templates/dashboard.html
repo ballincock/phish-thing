@@ -31,8 +31,8 @@
         <div class="dropdown">
             <button class="dropbtn">Weather ▾</button>
             <div class="dropdown-content">
-                <a href="#current-weather">Current Weather Report</a>
-                <a href="#historical-weather">Historical Weather Report</a>
+                <a href="{{ url_for('weather.weather_page') }}">Current Weather Report</a>
+                <a href="{{ url_for('historical.historical_page') }}">Historical Weather Range</a>
                 <a href="#weather-predictions">Weather Based Predictions</a>
             </div>
         </div>
