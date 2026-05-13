@@ -1278,152 +1278,172 @@ class FishingCalculators:
                         db.close()
 
         if cid == 9:
-            if step == 9.1: 
-                city = data.get('city_input')
-                api_key = "YU87AQZC9FSKBEL8GL97CD6K3"  
-        
+            if step == 9.1:
+                city = data.get('city_input', 'Chicago').strip()
+                api_key = "YU87AQZC9FSKBEL8GL97CD6K3"
                 url = f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{city}/today"
-                params = {
-                    "unitGroup": "us",
-                    "key": api_key,
-                    "include": "current",
-                    "contentType": "json"
-                }
-        
+                params = {"unitGroup": "us", "key": api_key, "include": "current", "contentType": "json"}
+    
                 try:
-                    response = requests.get(url, params=params)
+                    response = requests.get(url, params=params, timeout=10)
                     response.raise_for_status()
-                    weather_data = response.json()
-            
-                    current = weather_data['currentConditions']
-                    temp = current.get('temp')
-                    pressure = current.get('pressure')
+        
+                    current = response.json().get('currentConditions', {})
+                    temp = current.get('temp', 0)
+                    pressure = current.get('pressure', 1013)
                     precip = current.get('precip', 0)
-                    w_speed = current.get('windspeed')
-                    w_dir_deg = current.get('winddir')
-            
+                    w_speed = current.get('windspeed', 0)
+                    w_dir_deg = current.get('winddir', 0)
+        
                     dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
                     w_dir = dirs[int((w_dir_deg + 22.5) % 360 / 45)]
-
-                    db = mysql.connector.connect(host="localhost", user="root", password="", database="pyrb")
-                    cursor = db.cursor()
-            
-                    sql = """INSERT INTO api_weather_logs (location, temp, pressure, precip, wind_speed, wind_dir) 
-                     VALUES (%s, %s, %s, %s, %s, %s)"""
-                    cursor.execute(sql, (city, temp, pressure, precip, w_speed, w_dir))
-                    db.commit()
-
-                    cursor.execute("SELECT location, temp, logged_at FROM api_weather_logs ORDER BY id DESC LIMIT 5")
-                    rows = cursor.fetchall()
-                    history = "".join([f"\n- {r[0]}: {r[1]}°F at {r[2]}" for r in rows])
-
+        
+                    log_entry = ApiWeatherLog(
+                        location=city,
+                        temp=float(temp),
+                        pressure=float(pressure),
+                        precip=float(precip),
+                        wind_speed=float(w_speed),
+                        wind_dir=w_dir
+                    )
+                    db.session.add(log_entry)
+                    db.session.commit()
+        
+                    rows = ApiWeatherLog.query.order_by(ApiWeatherLog.id.desc()).limit(5).all()
+                    history = "".join([f"\n- {r.location}: {r.temp}°F at {r.logged_at.strftime('%H:%M:%S')}" for r in rows])
+        
                     return f"Current in {city}: {temp}°F, {w_speed}mph {w_dir}, {pressure}mb. History:{history}"
-
+        
                 except Exception as e:
-                    return f"Error: {e}"
-                finally:
-                    if 'db' in locals() and db.is_connected():
-                        cursor.close()
-                        db.close()
+                    db.session.rollback()
+                    return f"System Error: {str(e)}"
 
-            if step == 9.2: 
-                raw_city = data.get('city_input', 'Chicago')
-                city = quote(raw_city) 
+            if step == 9.2:
+                raw_city = data.get('city_input', 'Chicago').strip()
+                city = quote(raw_city)
                 start = data.get('date_start')
                 end = data.get('date_end')
                 api_key = "YU87AQZC9FSKBEL8GL97CD6K3"
-
+    
+                if not start or not end:
+                    return "System Error: Missing required Start Date or End Date parameters."
+        
                 try:
                     base_url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
                     url = f"{base_url}{city}/{start}/{end}"
-            
+        
                     params = {
                         "unitGroup": "us",
                         "key": api_key,
                         "include": "days",
                         "contentType": "json"
                     }
-            
-                    response = requests.get(url, params=params, verify=True) 
+        
+                    response = requests.get(url, params=params, timeout=12, verify=True)
                     response.raise_for_status()
+        
                     days = response.json().get('days', [])
-
-                    db = mysql.connector.connect(host="localhost", user="root", password="", database="pyrb")
-                    cursor = db.cursor()
-
+                    trend = "Stable"
+        
                     for i in range(len(days)):
                         day = days[i]
                         trend = "Stable"
-                
+            
                         if i > 0:
                             prev = days[i-1]
-
-                            if day['temp'] - prev['temp'] < -10: trend = "Cold Front"
-                            elif day['pressure'] < 1000: trend = "Storm Alert"
-
-                        sql = """INSERT INTO api_weather_logs (location, temp, pressure, precip, wind_speed, trends, logged_at) 
-                         VALUES (%s, %s, %s, %s, %s, %s, %s)"""
-                        cursor.execute(sql, (raw_city, day['temp'], day['pressure'], day['precip'], day['windspeed'], trend, day['datetime']))
+                            current_temp = day.get('temp', 0) or 0
+                            prev_temp = prev.get('temp', 0) or 0
+                            current_pressure = day.get('pressure', 1013.25) or 1013.25
+                
+                            if current_temp - prev_temp < -10:
+                                trend = "Cold Front"
+                            elif current_pressure < 1000:
+                                trend = "Storm Alert"
+ 
+                        try:
+                            parsed_logged_at = datetime.strptime(day['datetime'], '%Y-%m-%d')
+                        except (ValueError, KeyError):
+                            parsed_logged_at = datetime.utcnow()
+                
+                        log_entry = ApiWeatherLog(
+                            location=raw_city,
+                            temp=float(day.get('temp', 0) or 0),
+                            pressure=float(day.get('pressure', 1013.25) or 1013.25),
+                            precip=float(day.get('precip', 0) or 0),
+                            wind_speed=float(day.get('windspeed', 0) or 0),
+                            wind_dir=None,  
+                            trends=f"Trend: {trend}", 
+                            logged_at=parsed_logged_at
+                        )
+                        db.session.add(log_entry)
             
-                    db.commit()
+                    db.session.commit()
                     return f"Success! {len(days)} days logged for {raw_city}. Recent Trends detected: {trend}."
-
-                except Exception as err:
-                    return f"System Error: {err}"
-                finally:
-                    if 'db' in locals() and db.is_connected():
-                        cursor.close()
-                        db.close()
-
-            if step == 9.3: 
-                raw_city = data.get('city_input', 'Chicago').strip().replace(" ", "%20")
-                api_key = "YU87AQZC9FSKBEL8GL97CD6K3"
         
+                except Exception as err:
+                    db.session.rollback()
+                    return f"System Error: {str(err)}"
+                    
+            if step == 9.3:
+                raw_city = data.get('city_input', 'Chicago').strip()
+                api_key = "YU87AQZC9FSKBEL8GL97CD6K3"
+    
                 try:
                     base_url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
                     url = f"{base_url}{raw_city}/today"
-            
+        
                     params = {
                         "unitGroup": "us",
                         "key": api_key,
                         "include": "current",
                         "contentType": "json"
                     }
-            
-                    response = requests.get(url, params=params)
+        
+                    response = requests.get(url, params=params, timeout=10)
                     response.raise_for_status()
+        
                     current = response.json().get('currentConditions', {})
-            
                     temp = current.get('temp', 0)
                     pressure = current.get('pressure', 1013)
                     w_speed = current.get('windspeed', 0)
-            
+        
                     prob = 50
                     reasons = []
-                    if 1005 <= pressure <= 1015:
+
+                    parsed_pressure = float(pressure or 1013)
+        
+                    if 1005 <= parsed_pressure <= 1015:
                         prob += 20
                         reasons.append("Stable Pressure")
-                    elif pressure < 1005:
+                    elif parsed_pressure < 1005:
                         prob += 10
                         reasons.append("Falling Barometer (Active Feed)")
             
                     final_score = max(5, min(95, prob))
                     verdict = "EXCELLENT" if final_score > 75 else "GOOD" if final_score > 50 else "TOUGH"
-
-                    db = mysql.connector.connect(host="localhost", user="root", password="", database="pyrb")
-                    cursor = db.cursor()
-                    sql = "INSERT INTO api_weather_logs (location, temp, pressure, trends) VALUES (%s, %s, %s, %s)"
-                    cursor.execute(sql, (raw_city, temp, pressure, f"Prob: {final_score}% ({verdict})"))
-                    db.commit()
-
+                    trends_payload = f"Prob: {final_score}% ({verdict})"
+        
+                    new_log = ApiWeatherLog(
+                        location=raw_city,
+                        temp=float(temp or 0),
+                        pressure=parsed_pressure,
+                        wind_speed=float(w_speed or 0),
+                        wind_dir=None,
+                        precip=0.0,
+                        trends=trends_payload,
+                        reasons=", ".join(reasons) if reasons else "No anomalous readings"  
+                    )
+                    db.session.add(new_log)
+                    db.session.commit()
+        
                     return f"Success! {raw_city} 'good day' Odds: {final_score}% ({verdict})."
-
+        
                 except Exception as e:
-                    return f"System Error: {e}"
-                finally:
-                    if 'db' in locals() and db.is_connected():
-                        cursor.close()
-                        db.close()
+                    try:
+                        db.session.rollback()
+                    except Exception:
+                        pass 
+                    return f"System Error: {str(e)}"
 
 @fishing_bp.route('/', methods=['GET']) 
 def calculator_page():
@@ -1436,6 +1456,9 @@ def process_fishing():
     step = float(payload.get('step'))
     data = payload.get('data')
 
-    output = FishingCalculators.run_logic(cid, step, data)
-    
-    return jsonify({'result': output})
+    try:
+        output = FishingCalculators.run_logic(cid, step, data)
+        return jsonify({"success": True, "result": output})
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
