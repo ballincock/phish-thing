@@ -1,3 +1,8 @@
+from app.models.user import db
+from app.models.weather_log import ApiWeatherLog 
+import requests
+from datetime import datetime
+from urllib.parse import quote
 from flask import Blueprint, render_template, request, jsonify
 import math
 
@@ -12,6 +17,7 @@ class FishingCalculators:
         return float(val)
       
     def run_logic(cid, step, data):
+        global db 
         if cid == 1:
             if step == 1.1: 
                 simple_ipt = float(data.get('simple_ipt', 0) or 0)
