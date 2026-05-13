@@ -11,6 +11,7 @@ from app.blueprints.community import community_bp
 from app.blueprints.gallery_profile import gallery_profile_bp
 from app.blueprints.calcs import fishing_bp
 from app.blueprints.current_weather import weather_bp
+from app.blueprints.historical_weather import historical_bp
 
 def create_app():
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
@@ -57,8 +58,10 @@ def create_app():
     app.register_blueprint(gallery_profile_bp)
     app.register_blueprint(fishing_bp)
     app.register_blueprint(weather_bp)
+    app.register_blueprint(historical_bp)
 
     with app.app_context():
+        from app.models.weather_log import ApiWeatherLog
         db.create_all()
 
     return app
