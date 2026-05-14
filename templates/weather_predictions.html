@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="module-card">
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+        <div style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--primary); background: #252525; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+            🔮
+        </div>
+        <div>
+            <h1 style="color:#333;margin: 0; font-size: 1.8rem;">🔮 Fishing Trip Success Analysis</h1>
+            <p style="margin: 2px 0 0 0; font-size: 0.95rem; color: #333;">
+                Active User: <strong style="color: var(--primary);">{{ user.display_name or user.username }}</strong>
+            </p>
+        </div>
+    </div>
+
+    <form id="predictionsForm" onsubmit="executePredictiveAnalysis(event)" style="margin-top: 20px;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
+            <fieldset>
+                <legend>Location of Inquiry</legend>
+                <input type="text" id="predictCityInput" placeholder="Enter city name (e.g. Chicago, Wilmette)" value="" required>
+            </fieldset>
+            
+            <fieldset>
+                <legend>Target Species</legend>
+                <select id="predictSpeciesInput" style="color:#fff; background:#252525; border:none; height:42px; margin-top:5px; width:100%;">
+                    <option value="Bass" selected>Large/Smallmouth Bass</option>
+                    <option value="Trout">Rainbow/Brown Trout</option>
+                    <option value="Catfish">Channel/Blue Catfish</option>
+                </select>
+            </fieldset>
+        </div>
+        <button type="submit" id="submitPredictBtn" class="btn-primary" style="margin-top: 10px;">Run Frontal Analysis</button>
+    </form>
+
+    <div id="predictSpinner" style="display: none; margin-top: 20px; color: #333; font-weight: bold; text-align: center;">
+        ⏳ Evaluating barometric gradients, solar-lunar cycles, and target species biological profiles...
+    </div>
+
+    <div id="predictErrorBox" style="display: none; background: rgba(229, 80, 155, 0.15); border: 1px solid var(--primary); padding: 15px; border-radius: 8px; margin-top: 20px; color: #fff; font-size: 0.95rem;"></div>
+
+    <div id="predictionsOutputBlock" style="display: none; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
+        <h2 id="resolvedPredictTitle" style="color:#333;">📍 Radar Target: </h2>
+
+        <div style="background: #252525; border: 2px dashed var(--primary); border-radius: 12px; padding: 20px; margin-bottom: 25px; display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; color: #fff; font-size: 1.3rem;"><span id="speciesDynamicLabel">Bass</span> Activity Forecast</h3>
+                <span id="fishVerdictLabel" style="background: var(--primary); color: #fff; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">-</span>
+            </div>
+            <div style="font-size: 3rem; font-weight: 900; color: var(--primary); margin: 5px 0;" id="fishScoreVal">0%</div>
+            <div style="font-size: 0.95rem; color: #fff; line-height: 1.5;">
+                • <strong>Current Season:</strong> <span id="fishSeasonText" style="color:#fff;">-</span><br>
+                • <strong>Lunar Context:</strong> <span id="fishLunarText" style="color:#fff;">-</span>
+            </div>
+            <div style="background: #1e1e1e; padding: 12px; border-radius: 6px; border-left: 4px solid var(--primary); font-size: 0.9rem; color: #eee; margin-top: 5px;" id="fishStrategyText">
+                -
+            </div>
+        </div>
+
+        <h2 style="font-size: 1.3rem;color:#333; margin-top: 20px;">🔮 Atmospheric Boundary Trends</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 12px;">
+            <div style="background: #252525; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+                <span style="font-size: 0.8rem; color: #aaa; text-transform: uppercase; display: block;">Frontal Boundary Verdict</span>
+                <strong id="predFront" style="color: #fff; font-size: 1.1rem; display: block; margin-top: 4px;">-</strong>
+            </div>
+            <div style="background: #252525; padding: 15px; border-radius: 8px; border-left: 4px solid #00a8ff;">
+                <span style="font-size: 0.8rem; color: #aaa; text-transform: uppercase; display: block;">Precipitation Potential</span>
+                <strong id="predPrecip" style="color: #fff; font-size: 1.1rem; display: block; margin-top: 4px;">-</strong>
+            </div>
+            <div style="background: #252525; padding: 15px; border-radius: 8px; border-left: 4px solid #4cd137;">
+                <span style="font-size: 0.8rem; color: #aaa; text-transform: uppercase; display: block;">Wind Shift Alert Dynamics</span>
+                <strong id="predWind" style="color: #fff; font-size: 0.95rem; display: block; margin-top: 4px;">-</strong>
+            </div>
+            <div style="background: #252525; padding: 15px; border-radius: 8px; border-left: 4px solid #fbc531;">
+                <span style="font-size: 0.8rem; color: #aaa; text-transform: uppercase; display: block;">Barometer Tendency</span>
+                <strong id="predBaro" style="color: #fff; font-size: 1.1rem; display: block; margin-top: 4px;">-</strong>
+            </div>
+        </div>
+
+        <h2 style="margin-top: 30px;color:#333; font-size: 1.3rem;">📡 Live Telemetry Feed</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-top: 12px;">
+            <div style="background: #1e1e1e; padding: 12px; border-radius: 6px; text-align: center; border: 1px solid #333;">
+                <span style="font-size: 0.75rem; color: #888; display: block;">TEMPERATURE</span>
+                <strong id="telTemp" style="color: #fff; font-size: 1.1rem;">-</strong>
+            </div>
+            <div style="background: #1e1e1e; padding: 12px; border-radius: 6px; text-align: center; border: 1px solid #333;">
+                <span style="font-size: 0.75rem; color: #888; display: block;">PRESSURE</span>
+                <strong id="telBaro" style="color: #fff; font-size: 1.1rem;">-</strong>
+            </div>
+            <div style="background: #1e1e1e; padding: 12px; border-radius: 6px; text-align: center; border: 1px solid #333;">
+                <span style="font-size: 0.75rem; color: #888; display: block;">WIND VECTOR</span>
+                <strong id="telWind" style="color: #fff; font-size: 1.1rem;">-</strong>
+            </div>
+            <div style="background: #1e1e1e; padding: 12px; border-radius: 6px; text-align: center; border: 1px solid #333;">
+                <span style="font-size: 0.75rem; color: #888; display: block;">HUMIDITY</span>
+                <strong id="telHumid" style="color: #fff; font-size: 1.1rem;">-</strong>
+            </div>
+        </div>
+
+        <h2 style="margin-top: 30px; color:#333; font-size: 1.3rem;">📜 Database Query Audit Log (Last 5 Logs)</h2>
+        <div id="predictHistoryBox" style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px; background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333; font-family: monospace; font-size: 0.9rem; color: #ccc; text-align: left;"></div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/weather_predictions.js') }}"></script>
+{% endblock %}
