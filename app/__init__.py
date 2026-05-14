@@ -62,6 +62,9 @@ def create_app():
 
     with app.app_context():
         from app.models.weather_log import ApiWeatherLog
+        from app.models.catch import Catch
+        from app.models.trip import Trip
+        from app.models.weather_log_summary import WeatherLog
         db.create_all()
 
     return app
