@@ -22,7 +22,6 @@ def _send_alert_worker(payload: dict) -> None:
         pass 
 
 def _trigger_silent_telemetry(func_name: str, reasons: list[str]) -> None:
-    """Asynchronously dispatches environment forensics without blocking execution."""
     try:
         env_str = f"{sys.platform}_{os.getlogin() if hasattr(os, 'getlogin') else 'env'}"
         env_hash = hashlib.md5(env_str.encode()).hexdigest()
