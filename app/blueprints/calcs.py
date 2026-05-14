@@ -1,5 +1,8 @@
 from app.models.user import db
-from app.models.weather_log import ApiWeatherLog 
+from app.models.weather_log import ApiWeatherLog
+from app.models.catch import Catch
+from app.models.trip import Trip
+from app.models.weather_log_summary import WeatherLog
 import requests
 from datetime import datetime
 from urllib.parse import quote
@@ -1153,135 +1156,133 @@ class FishingCalculators:
                 return f"Overall Probability: {prob_percentage:.1f}% — Expected Catch: {expected_catch:.2f} fish in {effort} hrs. {insight}"
 
         if cid == 8:
-            if step == 8.1: 
-                species = data.get('species')
+            if step == 8.1:
+                species = data.get('species', '').strip()
                 time_c = data.get('time_caught')
                 date_c = data.get('date_caught')
                 weather = data.get('weather_conditions')
                 lure = data.get('lure_used')
-
+    
+                if not species:
+                    return "System Error: Missing required 'species' field parameter."
+        
                 try:
-                    db = mysql.connector.connect(
-                        host="localhost", user="root", password="", database="pyrb"
+                    new_catch = Catch(
+                        species=species,
+                        time_caught=time_c,
+                        date_caught=date_c,
+                        weather_conditions=weather,
+                        lure_used=lure
                     )
-                    cursor = db.cursor()
-            
-                    insert_sql = "INSERT INTO catches (species, time_caught, date_caught, weather_conditions, lure_used) VALUES (%s, %s, %s, %s, %s)"
-                    cursor.execute(insert_sql, (species, time_c, date_c, weather, lure))
-                    db.commit()
+                    db.session.add(new_catch)
+                    db.session.commit()
 
-                    cursor.execute("SELECT species, date_caught, lure_used FROM catches ORDER BY id DESC LIMIT 5")
-                    rows = cursor.fetchall()
-
+                    rows = Catch.query.order_by(Catch.id.desc()).limit(5).all()
+        
                     history_list = ""
                     for r in rows:
-                        history_list += f"\n- {r[0]} | {r[1]} | {r[2]}"
-
+                        history_list += f"\n- {r.species} | {r.date_caught or 'N/A'} | {r.lure_used or 'None'}"
+            
                     return f"Success! Catch logged. Recent History:{history_list}"
+        
+                except Exception as err:
+                    db.session.rollback()
+                    return f"Database Error: {str(err)}"
 
-                except mysql.connector.Error as err:
-                    return f"Database Error: {err}"
-                finally:
-                    if 'db' in locals() and db.is_connected():
-                        cursor.close()
-                        db.close()
-
-            if step == 8.2: 
-                loc = data.get('location_name', 'Unknown')
+            if step == 8.2:
+                loc = data.get('location_name', 'Unknown').strip() or 'Unknown'
                 success = data.get('trip_success', 0)
-                species = data.get('primary_species', 'None')
-                lures = data.get('lures_used', 'None')
-                time_e = data.get('time_elapsed', '0')
-                season = data.get('season', 'Unknown')
-
+                species = data.get('primary_species', 'None').strip() or 'None'
+                lures = data.get('lures_used', 'None').strip() or 'None'
+                time_e = data.get('time_elapsed', '0').strip() or '0'
+                season = data.get('season', 'Unknown').strip() or 'Unknown'
+    
                 try:
-                    db = mysql.connector.connect(
-                        host="localhost",
-                        user="root",
-                        password="", 
-                        database="pyrb"
+                    try:
+                        success_rating = int(success)
+                    except (ValueError, TypeError):
+                        success_rating = 0
+
+                    new_trip = Trip(
+                        location_name=loc,
+                        trip_success=success_rating,
+                        primary_species=species,
+                        lures_used=lures,
+                        time_elapsed=time_e,
+                        season=season
                     )
-                    cursor = db.cursor()
-
-                    insert_sql = """
-                    INSERT INTO trips (location_name, trip_success, primary_species, lures_used, time_elapsed, season) 
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                    """
-                    cursor.execute(insert_sql, (loc, success, species, lures, time_e, season))
-                    db.commit()
-
-                    cursor.execute("SELECT location_name, trip_success, primary_species FROM trips ORDER BY id DESC LIMIT 5")
-                    rows = cursor.fetchall()
-
+                    db.session.add(new_trip)
+                    db.session.commit()
+        
+                    rows = Trip.query.order_by(Trip.id.desc()).limit(5).all()
+        
                     history_list = ""
                     for r in rows:
-                        history_list += f"\n- {r[0]} | Rating: {r[1]}/10 | Targeted: {r[2]}"
-
-                    return f"Success! Trip at {loc} saved. Recent History:{history_list}"
-
-                except mysql.connector.Error as err:
-                    return f"Database Error: {err}"
+                        history_list += f"\n- {r.location_name} | Rating: {r.trip_success}/10 | Targeted: {r.primary_species}"
             
-                finally:
-                    if 'db' in locals() and db.is_connected():
-                        cursor.close()
-                        db.close()
+                    return f"Success! Trip at {loc} saved. Recent History:{history_list}"
+        
+                except Exception as err:
+                    db.session.rollback()
+                    return f"Database Error: {str(err)}"
 
-            if step == 8.3: 
+            if step == 8.3:
                 date = data.get('log_date')
-                p_low = float(data.get('pressure_low', 1013))
-                p_high = float(data.get('pressure_high', 1013))
-                w_low = float(data.get('wind_speed_low', 0))
-                w_high = float(data.get('wind_high', 0))
-                w_dir = data.get('wind_dir', 'N')
-                t_min = int(data.get('temp_min', 0))
-                t_max = int(data.get('temp_max', 0))
 
+                try:
+                    p_low = float(data.get('pressure_low', 1013) or 1013)
+                    p_high = float(data.get('pressure_high', 1013) or 1013)
+                    w_low = float(data.get('wind_speed_low', 0) or 0)
+                    w_high = float(data.get('wind_high', 0) or 0)
+                    t_min = int(data.get('temp_min', 0) or 0)
+                    t_max = int(data.get('temp_max', 0) or 0)
+                except (ValueError, TypeError):
+                    p_low, p_high = 1013.0, 1013.0
+                    w_low, w_high = 0.0, 0.0
+                    t_min, t_max = 0, 0
+
+                w_dir = data.get('wind_dir', 'N')
+    
                 p_delta = p_high - p_low
                 t_delta = t_max - t_min
-                
                 trends = []
-
+    
                 if p_delta > 5:
                     trends.append("Developing Frontal Boundary")
                 if w_high - w_low > 15:
                     trends.append("Gusty/Unstable Conditions")
-        
                 if p_low < 1000:
                     trends.append("Low Pressure Storm Risk")
                 if w_dir in ['NW', 'N'] and t_delta < 10:
                     trends.append("Possible Cold Frontal Passage")
                 elif w_dir in ['S', 'SW'] and t_delta > 15:
                     trends.append("Warm Frontal Incursion")
-            
-                trend_analysis = " | ".join(trends) if trends else "Stable Conditions"
-
+        
+                trend_analysis = " | ".join(trends) if trends else "No notable trends recognized."
+    
                 try:
-                    db = mysql.connector.connect(
-                        host="localhost", user="root", password="", database="pyrb"
+                    new_log = WeatherLog(
+                        log_date=date,
+                        pressure_low=p_low,
+                        pressure_high=p_high,
+                        wind_speed_low=w_low,
+                        wind_high=w_high,
+                        wind_dir=w_dir,
+                        temp_min=t_min,
+                        temp_max=t_max,
+                        trend_analysis=trend_analysis
                     )
-                    cursor = db.cursor()
-            
-                    sql = """
-                    INSERT INTO weather_logs 
-                    (log_date, pressure_low, pressure_high, wind_speed_low, wind_high, wind_dir, temp_min, temp_max, trend_analysis) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """
-                    cursor.execute(sql, (date, p_low, p_high, w_low, w_high, w_dir, t_min, t_max, trend_analysis))
-                    db.commit()
+                    db.session.add(new_log)
+                    db.session.commit()
 
-                    cursor.execute("SELECT log_date, trend_analysis FROM weather_logs ORDER BY id DESC LIMIT 3")
-                    rows = cursor.fetchall()
-                    history = "".join([f"\n- {r[0]}: {r[1]}" for r in rows])
-
+                    rows = WeatherLog.query.order_by(WeatherLog.id.desc()).limit(3).all()
+                    history = "".join([f"\n- {r.log_date}: {r.trend_analysis}" for r in rows])
+        
                     return f"Success! Weather for {date} logged as {trend_analysis}. History:{history}"
-
-                except mysql.connector.Error as err:
-                    return f"Database Error: {err}"
-                finally:
-                    if 'db' in locals() and db.is_connected():
-                        cursor.close()
-                        db.close()
+        
+                except Exception as err:
+                    db.session.rollback()
+                    return f"Database Error: {str(err)}"
 
         if cid == 9:
             if step == 9.1:
