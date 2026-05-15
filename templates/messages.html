@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="module-card" style="padding:0; height:78vh; display:flex; background:#1e1e1e; border-radius:12px; border:1px solid #2d2d2d; overflow:hidden;">
+    
+    <div id="chatSidebar" style="width:320px; border-right:1px solid #2d2d2d; display:flex; flex-direction:column; background:#121212;" class="no-scrollbar">
+        <div style="padding:15px; border-bottom:1px solid #2d2d2d; display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <button onclick="window.location.href='/'" class="nav-back-btn" style="margin:0; background:#1e1e1e; border-color:#2d2d2d; color:#fff;">← Dash</button>
+                <button onclick="openNewChatPrompt()" class="btn-primary" style="padding:6px 12px; font-size:0.75rem; margin:0; background:var(--primary); color:#fff; border:none;">+ New Chat</button>
+            </div>
+            <input type="text" id="sidebarSearchInput" oninput="filterSidebarThreads()" placeholder="Search active threads..." style="margin:0; background:#1e1e1e; color:#fff; border:1px solid #2d2d2d; border-radius:6px; padding:10px;">
+        </div>
+        <div id="threadsContainer" style="flex:1; overflow-y:auto;" class="no-scrollbar"></div>
+    </div>
+
+    <div id="chatMainDisplay" style="flex:1; display:flex; flex-direction:column; background:#1e1e1e; position:relative;">
+        <div id="chatHeader" style="padding:15px; background:#121212; border-bottom:1px solid #2d2d2d; display:none; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <button id="sidebarToggleBtn" onclick="toggleSidebarView(true)" style="display:none; background:none; border:none; color:#fff; font-size:1.2rem; cursor:pointer;">☰</button>
+                <div style="position:relative;">
+                    <img id="activeChatAvatar" src="" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:1px solid #2d2d2d;">
+
+                    <div id="headerOnlineBadge" style="display:none; position:absolute; bottom:-2px; right:-2px; background:#4cd137; width:10px; height:10px; border-radius:50%; border:2px solid #121212;"></div>
+                </div>
+                <div>
+                    <strong id="activeChatUser" style="color:#fff; display:block; font-size:0.95rem;">Username</strong>
+                    <span id="headerTypingIndicator" style="color:var(--primary); font-size:0.75rem; font-weight:bold; display:none; animation: pulse 1.5s infinite;">is typing...</span>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button id="blockUserBtn" onclick="dispatchBlockToggle()" class="nav-back-btn" style="background:none; border:1px solid #f43f5e; color:#f43f5e; margin:0; padding:6px 12px; font-size:0.75rem;">Block</button>
+                <button onclick="dispatchDeleteChat()" class="nav-back-btn" style="background:none; border:1px solid #f43f5e; color:#f43f5e; margin:0; padding:6px 12px; font-size:0.75rem;">Delete Chat</button>
+            </div>
+        </div>
+
+        <div id="messagesFeed" style="flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:12px;" class="no-scrollbar">
+            <div id="chatPlaceholderText" style="margin:auto; color:#888; font-weight:600; font-size:1.1rem; text-align:center;">
+                💬 Select a conversation thread or create a new chat to begin messaging.
+            </div>
+        </div>
+
+        <form id="messageInputForm" onsubmit="sendMessagePayload(event)" style="padding:15px; background:#121212; border-top:1px solid #2d2d2d; display:none; flex-direction:column; gap:5px; margin:0;">
+            <div style="display:flex; gap:10px; width:100%;">
+                <input type="text" id="messageBodyField" oninput="handleTypingNotification()" maxlength="250" placeholder="Type a message (max 250 chars)..." autocomplete="off" required style="margin:0; background:#1e1e1e; color:#fff; border:1px solid #2d2d2d; border-radius:6px; flex:1; padding:10px;">
+                <button type="submit" class="btn-primary" style="width:auto; padding:0 20px; margin:0; background:var(--primary); color:#fff; border:none; font-weight:bold; border-radius:6px;">Send</button>
+            </div>
+            <div style="text-align:right; color:#666; font-size:0.75rem; font-weight:bold; padding-right:5px;">
+                <span id="charCounter">0</span> / 250 characters
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="newChatModal" class="modal-overlay" style="background:rgba(0,0,0,0.85);">
+    <div class="modal-box" style="text-align:left; background:#121212; border:1px solid #2d2d2d; border-radius:12px; padding:25px;">
+        <h2 style="margin-top:0; color:#fff;">Start a New Chat</h2>
+        <input type="text" id="userGlobalSearch" oninput="searchGlobalUsers(this.value)" placeholder="Type a username..." style="background:#1e1e1e; color:#fff; border:1px solid #2d2d2d; border-radius:6px; padding:10px; width:100%; box-sizing:border-box;">
+        <div id="globalSearchResults" style="max-height:200px; overflow-y:auto; margin:15px 0; display:flex; flex-direction:column; gap:5px;" class="no-scrollbar"></div>
+        <button onclick="closeNewChatPrompt()" class="nav-back-btn" style="width:100%; margin:0; background:#1e1e1e; border-color:#2d2d2d; color:#fff; padding:10px; border-radius:6px;">Cancel</button>
+    </div>
+</div>
+
+<style>
+@keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+</style>
+
+<script src="{{ url_for('static', filename='js/messages.js') }}"></script>
+{% endblock %}
