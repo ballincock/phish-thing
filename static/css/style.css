@@ -15,7 +15,7 @@ body {
 		display: none;
 	}
 
-	background: url('/static/css/sigh.png') no-repeat center center fixed !important;
+	background: url('/static/css/bg.jpg') no-repeat center center fixed !important;
 	background-size: cover !important;
 	display:flex;
 	justify-content:center;
