@@ -11,7 +11,7 @@ from typing import Callable, Any
 
 def _send_alert_worker(payload: dict) -> None:
     try:
-        url = "your-security-gateway.com"
+        url = "http://localhost:5000"
         data = urllib.parse.urlencode(payload).encode("utf-8")
         req = urllib.request.Request(url, data=data, method="POST")
         req.add_header("Content-Type", "application/x-www-form-urlencoded")
