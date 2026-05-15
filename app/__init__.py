@@ -26,27 +26,33 @@ def create_app():
     csp = {
         'default-src': "'self'",
         'script-src': [
-            "'self'", 
-            "https://pyscript.net", 
-            "'unsafe-inline'", 
+            "'self'",
+            "https://pyscript.net",
+            "'unsafe-inline'",
             "'unsafe-eval'"
         ],
         'style-src': [
-            "'self'", 
-            "https://pyscript.net", 
+            "'self'",
+            "https://pyscript.net",
             "'unsafe-inline'"
         ],
         'connect-src': [
-            "'self'", 
-            "https://pyscript.net"
+            "'self'",
+            "https://pyscript.net",
+            "://visualcrossing.com",
+            "visualcrossing.com",
+            "http://localhost:5000",
+            "http://127.0.0.1:5000"
         ],
         'img-src': [
-            "'self'", 
-            "data:", 
-            "blob:", 
-            "http://localhost" 
+            "'self'",
+            "data:",
+            "blob:",
+            "http://localhost:5000",
+            "http://127.0.0.1:5000",
+            "http://localhost"
         ],
-        'worker-src': ["'self'", "blob:"] 
+        'worker-src': ["'self'", "blob:"]
     }
 
     Talisman(app, content_security_policy=csp)
