@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -24,6 +25,8 @@ class User(db.Model):
     favorite_species = db.Column(db.String(100))
     favorite_pb = db.Column(db.String(100))
     fishing_region = db.Column(db.String(100))
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    is_typing_target = db.Column(db.Integer, default=0)
 
     def set_password(self, password):
         from werkzeug.security import generate_password_hash
