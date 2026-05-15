@@ -94,83 +94,90 @@ const matrixConfig = {
       }
    },
    3: {
-      name: "Hydrology - Flows",
+      name: "Hydrology - Runoff",
       "3.1": {
-         title: "Infiltration Rate",
+         title: "Time of Concentration",
          fields: [{
-            id: "drop_inches",
-            label: "Drop (in)",
+            id: "tc_length_ft",
+            label: "TC Length (ft)",
             type: "number",
             placeholder: "10"
          }, {
-            id: "time_minutes",
+            id: "tc_slope_ft_ft",
             label: "Time (min)",
             type: "number",
             placeholder: "10"
          }]
       },
       "3.2": {
-         title: "Quick Runoff",
+         title: "NRCS Runoff Depth",
          fields: [{
-            id: "r_area_acres",
-            label: "R Area (acres)",
+            id: "precip_in",
+            label: "Precipitation (in)",
             type: "number"
          }, {
-            id: "'r_intensity_in_hr",
-            label: "R Intensity (hr)",
+            id: "cn_value",
+            label: "CN Value",
             type: "number"
          }]
       },
       "3.3": {
-         title: "Orifice Flow",
+         title: "Ditch Capacity",
          fields: [{
-            id: "o_area_sqft",
-            label: "O Area (sq. ft)",
+            id: "b_width_ft",
+            label: "B Width (ft)",
             type: "number"
          }, {
-            id: "o_head_ft",
-            label: "O Head (ft)",
+            id: "flow_depth_ft",
+            label: "Flow Depth (ft)",
+            type: "number"
+         },  {
+            id: "side_slope_z",
+            label: "Side Slope (z)",
+            type: "number"
+         },  {
+            id: "ch_slope_ft_ft",
+            label: "CH Slope (ft)",
             type: "number"
          }]
       }
    },
    4: {
-      name: "Hydrology - Flows",
+      name: "Hydrology - Capacity",
       "4.1": {
-         title: "Infiltration Rate",
+         title: "RipRap Sizing",
          fields: [{
-            id: "drop_inches",
-            label: "Drop (in)",
-            type: "number",
-            placeholder: "10"
-         }, {
-            id: "time_minutes",
-            label: "Time (min)",
+            id: "v_fps",
+            label: "V (fps)",
             type: "number",
             placeholder: "10"
          }]
       },
       "4.2": {
-         title: "Quick Runoff",
+         title: "Est. Detention Storage",
          fields: [{
-            id: "r_area_acres",
-            label: "R Area (acres)",
+            id: "q_peak_inflow",
+            label: "Q Peak Inflow",
             type: "number"
          }, {
-            id: "'r_intensity_in_hr",
-            label: "R Intensity (hr)",
+            id: "q_allowable_out",
+            label: "Q Allowable (OUT)",
+            type: "number"
+         }, {
+            id: "storm_duration_min",
+            label: "Storm Duration (min)",
             type: "number"
          }]
       },
       "4.3": {
-         title: "Orifice Flow",
+         title: "Curb Inlet Capacity",
          fields: [{
-            id: "o_area_sqft",
-            label: "O Area (sq. ft)",
+            id: "inlet_length_ft",
+            label: "Inlet Length (ft)",
             type: "number"
          }, {
-            id: "o_head_ft",
-            label: "O Head (ft)",
+            id: "inlet_depth_ft",
+            label: "Inlet Depth (ft)",
             type: "number"
          }]
       }
