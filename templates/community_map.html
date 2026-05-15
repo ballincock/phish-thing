@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<div class="module-card" style="padding:0; height:78vh; display:flex; background:#121212; border-radius:12px; border:1px solid #2d2d2d; overflow:hidden;">
+    
+    <div id="mapSidebar" style="width:320px; border-right:1px solid #2d2d2d; display:flex; flex-direction:column; background:#121212;" class="no-scrollbar">
+        <div style="padding:15px; border-bottom:1px solid #2d2d2d; display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <button onclick="window.location.href='/'" class="nav-back-btn" style="margin:0; background:#1e1e1e; border-color:#2d2d2d; color:#fff;">← Dash</button>
+                <span style="color:var(--primary); font-size:0.75rem; font-weight:bold;">🌐 PUBLIC INTEL MAP</span>
+            </div>
+            <input type="text" id="pinSearchField" oninput="renderSidebarPinsList()" placeholder="Search shared coordinate logs..." style="margin:0; background:#1e1e1e; color:#fff; border:1px solid #2d2d2d; border-radius:6px; padding:10px;">
+        </div>
+        <div id="pinsListDeck" style="flex:1; overflow-y:auto;" class="no-scrollbar"></div>
+    </div>
+
+    <div id="mapViewport" style="flex:1; background:#1e1e1e; position:relative; z-index:1;"></div>
+</div>
+
+<div id="pinLogModal" class="modal-overlay" style="background:rgba(0,0,0,0.85); display:none; position:fixed; inset:0; z-index:9999; justify-content:center; align-items:center;">
+    <div class="modal-box" style="text-align:left; background:#121212; border:1px solid #2d2d2d; border-radius:12px; padding:25px; width:100%; max-width:480px; box-sizing:border-box;">
+        <h2 style="margin-top:0; color:#fff; font-size:1.4rem;">🌐 Log Community Coordinate Node</h2>
+        <form id="newPinSubmissionForm" onsubmit="dispatchPinCreation(event)" style="margin:0; display:flex; flex-direction:column; gap:12px;">
+            <input type="hidden" id="modalLatField">
+            <input type="hidden" id="modalLngField">
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div>
+                    <label style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:4px;">Coordinates Scraped</label>
+                    <input type="text" id="modalCoordPreview" readonly style="background:#1e1e1e; color:#666; border:1px solid #2d2d2d; border-radius:6px; padding:8px; font-size:0.8rem; width:100%; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:4px;">Spot Title</label>
+                    <input type="text" id="modalNameField" placeholder="e.g., Public Boat Launch" required style="background:#1e1e1e; color:#fff; border:1px solid #2d2d2d; border-radius:6px; padding:8px; font-size:0.8rem; width:100%; box-sizing:border-box;">
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div>
+                    <label style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:4px;">Primary Species</label>
+                    <input type="text" id="modalSpeciesField" placeholder="e.g., Northern Pike" style="background:#1e1e1e; color:#fff; border:1px solid #2d2d2d; border-radius:6px; padding:8px; font-size:0.8rem; width:100%; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:4px;">Lure Profile</label>
+                    <input type="text" id="modalLureField" placeholder="e.g., Live Bait / Rig" style="background:#1e1e1e; color:#fff; border:1px solid #2d2d2d; border-radius:6px; padding:8px; font-size:0.8rem; width:100%; box-sizing:border-box;">
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div>
+                    <label style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:4px;">Timeline / Season</label>
+                    <input type="text" id="modalSeasonField" placeholder="e.g., Autumn Transition" style="background:#1e1e1e; color:#fff; border:1px solid #2d2d2d; border-radius:6px; padding:8px; font-size:0.8rem; width:100%; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:4px;">Barometer Pressure</label>
+                    <input type="text" id="modalBaroField" placeholder="e.g., 1009 mb Steady" style="background:#1e1e1e; color:#fff; border:1px solid #2d2d2d; border-radius:6px; padding:8px; font-size:0.8rem; width:100%; box-sizing:border-box;">
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+                <div>
+                    <label style="color:#aaa; font-size:0.72rem; display:block; margin-bottom:4px;">Cloud Cover</label>
+                    <input type="text" id="modalCloudField" placeholder="Clear Skies" style="background:#1e1e1e; color:#fff; border:1px solid #2d2d2d; border-radius:6px; padding:6px; font-size:0.8rem; width:100%; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="color:#aaa; font-size:0.72rem; display:block; margin-bottom:4px;">Rain Status</label>
+                    <input type="text" id="modalRainField" placeholder="None" style="background:#1e1e1e; color:#fff; border:1px solid #2d2d2d; border-radius:6px; padding:6px; font-size:0.8rem; width:100%; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="color:#aaa; font-size:0.72rem; display:block; margin-bottom:4px;">Air/Water Temp</label>
+                    <input type="text" id="modalTempField" placeholder="74°F Surface" style="background:#1e1e1e; color:#fff; border:1px solid #2d2d2d; border-radius:6px; padding:6px; font-size:0.8rem; width:100%; box-sizing:border-box;">
+                </div>
+            </div>
+
+            <div>
+                <label style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:4px;">Wind Velocity & Heading</label>
+                <input type="text" id="modalWindField" placeholder="S at 8 mph" style="background:#1e1e1e; color:#fff; border:1px solid #2d2d2d; border-radius:6px; padding:8px; font-size:0.8rem; width:100%; box-sizing:border-box;">
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:10px; justify-content:flex-end;">
+                <button type="button" onclick="closeLogModal()" class="nav-back-btn" style="background:#1e1e1e; margin:0; padding:10px 20px;">Cancel</button>
+                <button type="submit" class="btn-primary" style="background:var(--primary); color:#fff; border:none; margin:0; width:auto; padding:0 25px; border-radius:6px; font-weight:bold;">Publish to Community</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/community_map.js') }}"></script>
+{% endblock %}
