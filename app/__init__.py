@@ -13,6 +13,7 @@ from app.blueprints.calcs import fishing_bp
 from app.blueprints.current_weather import weather_bp
 from app.blueprints.historical_weather import historical_bp
 from app.blueprints.weather_predictions import predictions_bp
+from app.blueprints.messages import messages_bp
 
 def create_app():
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
@@ -61,12 +62,15 @@ def create_app():
     app.register_blueprint(weather_bp)
     app.register_blueprint(historical_bp)
     app.register_blueprint(predictions_bp)
+    app.register_blueprint(messages_bp)
 
     with app.app_context():
         from app.models.weather_log import ApiWeatherLog
         from app.models.catch import Catch
         from app.models.trip import Trip
         from app.models.weather_log_summary import WeatherLog
+        from app.models.message import Message
+        from app.models.block import BlockList
         db.create_all()
 
     return app
