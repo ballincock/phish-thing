@@ -15,6 +15,7 @@ from app.blueprints.historical_weather import historical_bp
 from app.blueprints.weather_predictions import predictions_bp
 from app.blueprints.messages import messages_bp
 from app.blueprints.map_log import map_log_bp
+from app.blueprints.community_map import community_map_bp
 
 
 def create_app():
@@ -76,6 +77,7 @@ def create_app():
     app.register_blueprint(predictions_bp)
     app.register_blueprint(messages_bp)
     app.register_blueprint(map_log_bp)
+    app.register_blueprint(community_map_bp)
 
     with app.app_context():
         from app.models.weather_log import ApiWeatherLog
@@ -85,6 +87,7 @@ def create_app():
         from app.models.message import Message
         from app.models.block import BlockList
         from app.models.spot_pin import SpotPin
+        from app.models.community_pin import CommunityPin
         db.create_all()
 
     return app
