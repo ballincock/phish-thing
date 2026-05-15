@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from flask import Blueprint, render_template, request, session, jsonify
 from sqlalchemy import or_, and_
 from app.models.user import User, db
