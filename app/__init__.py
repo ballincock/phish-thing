@@ -14,6 +14,8 @@ from app.blueprints.current_weather import weather_bp
 from app.blueprints.historical_weather import historical_bp
 from app.blueprints.weather_predictions import predictions_bp
 from app.blueprints.messages import messages_bp
+from app.blueprints.map_log import map_log_bp
+
 
 def create_app():
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
@@ -28,17 +30,20 @@ def create_app():
         'script-src': [
             "'self'",
             "https://pyscript.net",
+            "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
             "'unsafe-inline'",
             "'unsafe-eval'"
         ],
         'style-src': [
             "'self'",
             "https://pyscript.net",
+            "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css", 
             "'unsafe-inline'"
         ],
         'connect-src': [
             "'self'",
             "https://pyscript.net",
+            "https://*.tile.openstreetmap.org",
             "://visualcrossing.com",
             "visualcrossing.com",
             "http://localhost:5000",
@@ -48,6 +53,7 @@ def create_app():
             "'self'",
             "data:",
             "blob:",
+            "https://*.tile.openstreetmap.org",
             "http://localhost:5000",
             "http://127.0.0.1:5000",
             "http://localhost"
@@ -69,6 +75,7 @@ def create_app():
     app.register_blueprint(historical_bp)
     app.register_blueprint(predictions_bp)
     app.register_blueprint(messages_bp)
+    app.register_blueprint(map_log_bp)
 
     with app.app_context():
         from app.models.weather_log import ApiWeatherLog
@@ -77,6 +84,7 @@ def create_app():
         from app.models.weather_log_summary import WeatherLog
         from app.models.message import Message
         from app.models.block import BlockList
+        from app.models.spot_pin import SpotPin
         db.create_all()
 
     return app
