@@ -50,7 +50,37 @@
                 {% endif %}
                 
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 4px 0;">
-                <a href="#messages">Direct Messages</a>
+                <a href="{{ url_for('messages.messages_view') }}" style="position: relative; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; gap: 8px;">
+                    💬 Direct Messages
+    
+                    {% if unread_count and unread_count > 0 %}
+                        <span style="
+                            background: #ffffff; 
+                            color: var(--primary); 
+                            font-size: 0.75rem; 
+                            font-weight: 900; 
+                            min-width: 18px; 
+                            height: 18px; 
+                            padding: 0 4px; 
+                            border-radius: 50%; 
+                            display: inline-flex; 
+                            align-items: center; 
+                            justify-content: center;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                            animation: badgePulse 2s infinite;
+                        ">
+                    {{ unread_count }}
+                        </span>
+                    {% endif %}
+                </a>
+
+                <style>
+                    @keyframes badgePulse {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.12); }
+                        100% { transform: scale(1); }
+                    }
+                </style>
                 <a href="#support">Support</a>
                 <a href="#donate">Donate</a>
                 <a href="{{ url_for('dash.logout') }}" style="color: #ef4444; font-weight: bold;">Logout</a>
@@ -124,4 +154,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);cursor:po
 #activeForm:hover::-webkit-scrollbar-thumb{background:#00a8ff}
 </style>
 <script src="{{ url_for('static', filename='js/fishing_calcs.js') }}"></script>
+<script>
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        window.location.reload();
+    }
+});
+</script>
 {% endblock %}
