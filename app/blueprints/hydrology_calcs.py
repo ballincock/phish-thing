@@ -14,7 +14,7 @@ def hydro_page():
     return render_template('hydrology_calcs.html', user=user)
 
 @hydrology_bp.route('/api/hydrology/execute', methods=['POST'])
-def execute_matrix_calc():
+def execute_hydro_calc():
     if 'user_id' not in session: 
         return jsonify({"error": "Unauthorized"}), 401
         
