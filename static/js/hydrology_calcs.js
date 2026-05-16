@@ -183,42 +183,50 @@ const matrixConfig = {
       }
    },
    5: {
-      name: "Hydrology - Flows",
+      name: "Hydrology - Flows Contd.",
       "5.1": {
-         title: "Infiltration Rate",
+         title: "Pipe Exit Velocity",
          fields: [{
-            id: "drop_inches",
-            label: "Drop (in)",
+            id: "flow_cfs",
+            label: "Flow (cfs)",
             type: "number",
             placeholder: "10"
          }, {
-            id: "time_minutes",
-            label: "Time (min)",
+            id: "p_dia_in",
+            label: "Pipe Diameter (in)",
             type: "number",
             placeholder: "10"
          }]
       },
       "5.2": {
-         title: "Quick Runoff",
+         title: "Sediment Basin Area",
          fields: [{
-            id: "r_area_acres",
-            label: "R Area (acres)",
+            id: "peak_q_cfs",
+            label: "Peak Q (cfs)",
             type: "number"
          }, {
-            id: "'r_intensity_in_hr",
-            label: "R Intensity (hr)",
+            id: "'settle_vel_fps",
+            label: "Settle Velocity (fps)",
             type: "number"
          }]
       },
       "5.3": {
-         title: "Orifice Flow",
+         title: "Composite Roughness",
          fields: [{
-            id: "o_area_sqft",
-            label: "O Area (sq. ft)",
+            id: "n_main",
+            label: "N Main",
             type: "number"
          }, {
-            id: "o_head_ft",
-            label: "O Head (ft)",
+            id: "p_main_ft",
+            label: "P Main (ft)",
+            type: "number"
+         },  {
+            id: "n_side",
+            label: "N Side",
+            type: "number"
+         }, {
+            id: "p_side_ft",
+            label: "P Side (ft)",
             type: "number"
          }]
       }
@@ -226,163 +234,230 @@ const matrixConfig = {
    6: {
       name: "Hydrology - Flows",
       "6.1": {
-         title: "Infiltration Rate",
+         title: "Runoff & Weir",
          fields: [{
-            id: "drop_inches",
-            label: "Drop (in)",
+            id: "r_coeff",
+            label: "R Coefficient",
             type: "number",
             placeholder: "10"
          }, {
-            id: "time_minutes",
-            label: "Time (min)",
+            id: "r_precip_in",
+            label: "R Precipitation (in)",
+            type: "number",
+            placeholder: "10"
+         }, {
+            id: "r_acres",
+            label: "R (acres)",
             type: "number",
             placeholder: "10"
          }]
       },
       "6.2": {
-         title: "Quick Runoff",
+         title: "Rectangular Weir",
          fields: [{
-            id: "r_area_acres",
-            label: "R Area (acres)",
+            id: "w_width_ft",
+            label: "W Width (ft)",
             type: "number"
          }, {
-            id: "'r_intensity_in_hr",
-            label: "R Intensity (hr)",
+            id: "w_head_ft",
+            label: "W Head (ft)",
             type: "number"
          }]
       },
       "6.3": {
-         title: "Orifice Flow",
+         title: "Grate Inlet Capacity",
          fields: [{
-            id: "o_area_sqft",
-            label: "O Area (sq. ft)",
+            id: "g_area_sqft",
+            label: "G Area (sq. ft)",
             type: "number"
          }, {
-            id: "o_head_ft",
-            label: "O Head (ft)",
+            id: "g_head_ft",
+            label: "G Head (ft)",
+            type: "number"
+         }, {
+            id: "g_clog_factor",
+            label: "G Clog Factor",
             type: "number"
          }]
       }
    },
    7: {
-      name: "Hydrology - Flows",
+      name: "Hydrology - Flows & Runoff",
       "7.1": {
-         title: "Infiltration Rate",
+         title: "Partial Pipe Flow",
          fields: [{
-            id: "drop_inches",
-            label: "Drop (in)",
+            id: "p_dia_in",
+            label: "Pipe Diameter (in)",
             type: "number",
             placeholder: "10"
          }, {
-            id: "time_minutes",
-            label: "Time (min)",
+            id: "p_depth_in",
+            label: "Pipe Depth (in)",
+            type: "number",
+            placeholder: "10"
+         }, {
+            id: "p_slope_ft_ft",
+            label: "Pipe Slope (ft)",
+            type: "number",
+            placeholder: "10"
+         }, {
+            id: "p_n_val",
+            label: "Pipe N Value",
             type: "number",
             placeholder: "10"
          }]
       },
       "7.2": {
-         title: "Quick Runoff",
+         title: "Water Quality Volume",
          fields: [{
-            id: "r_area_acres",
-            label: "R Area (acres)",
+            id: "wq_area_acres",
+            label: "WQ Area (acres)",
             type: "number"
          }, {
-            id: "'r_intensity_in_hr",
-            label: "R Intensity (hr)",
+            id: "wq_imperv_pct",
+            label: "WQ Imperv (pct)",
+            type: "number"
+         }, {
+            id: "wq_rainfall_in",
+            label: "WQ Rainfall (in)",
             type: "number"
          }]
       },
       "7.3": {
-         title: "Orifice Flow",
+         title: "Gutter Spread",
          fields: [{
-            id: "o_area_sqft",
-            label: "O Area (sq. ft)",
+            id: "gut_cross_slope",
+            label: "Gut Cross Slope",
             type: "number"
          }, {
-            id: "o_head_ft",
-            label: "O Head (ft)",
+            id: "gut_long_slope",
+            label: "Gut Long Slope",
+            type: "number"
+         }, {
+            id: "gut_flow_cfs",
+            label: "Gut Flow (cfs)",
+            type: "number"
+         }, {
+            id: "gut_n_val",
+            label: "Gut N Value",
             type: "number"
          }]
       }
    },
    8: {
-      name: "Hydrology - Flows",
+      name: "Hydrology - Imperv & Infiltration",
       "8.1": {
-         title: "Infiltration Rate",
+         title: "Annual Soil Loss",
          fields: [{
-            id: "drop_inches",
-            label: "Drop (in)",
+            id: "r_factor",
+            label: "R Factor",
             type: "number",
             placeholder: "10"
          }, {
-            id: "time_minutes",
-            label: "Time (min)",
+            id: "k_factor",
+            label: "K Factor",
+            type: "number",
+            placeholder: "10"
+         }, {
+            id: "ls_factor",
+            label: "LS Factor",
+            type: "number",
+            placeholder: "10"
+         }, {
+            id: "c_factor",
+            label: "C Factor",
             type: "number",
             placeholder: "10"
          }]
       },
       "8.2": {
-         title: "Quick Runoff",
+         title: "Culvert Headwater",
          fields: [{
-            id: "r_area_acres",
-            label: "R Area (acres)",
+            id: "c_flow_cfs",
+            label: "C Flow (cfs)",
             type: "number"
          }, {
-            id: "'r_intensity_in_hr",
-            label: "R Intensity (hr)",
+            id: "c_dia_in",
+            label: "C Diameter (in)",
+            type: "number"
+         }, {
+            id: "c_form_factor",
+            label: "C Form Factor",
             type: "number"
          }]
       },
       "8.3": {
-         title: "Orifice Flow",
+         title: "Sheet Flow",
          fields: [{
-            id: "o_area_sqft",
-            label: "O Area (sq. ft)",
+            id: "s_length_ft",
+            label: "S Length (ft)",
             type: "number"
          }, {
-            id: "o_head_ft",
-            label: "O Head (ft)",
+            id: "s_n_val",
+            label: "S N Val",
+            type: "number"
+         }, {
+            id: "s_precip_in",
+            label: "S Precipitation (in)",
+            type: "number"
+         }, {
+            id: "s_slope",
+            label: "S Slope",
             type: "number"
          }]
       }
    },
    9: {
-      name: "Hydrology - Flows",
+      name: "Hydrology - Energy & Loss",
       "9.1": {
-         title: "Infiltration Rate",
+         title: "Pressure Pipe Loss",
          fields: [{
-            id: "drop_inches",
-            label: "Drop (in)",
+            id: "f_length_ft",
+            label: "F Length (ft)",
             type: "number",
             placeholder: "10"
          }, {
-            id: "time_minutes",
-            label: "Time (min)",
+            id: "f_dia_in",
+            label: "F Diameter (in)",
+            type: "number",
+            placeholder: "10"
+         }, {
+            id: "f_vel_fps",
+            label: "F Velocity (fps)",
+            type: "number",
+            placeholder: "10"
+         }, {
+            id: "f_friction",
+            label: "F Friction",
             type: "number",
             placeholder: "10"
          }]
       },
       "9.2": {
-         title: "Quick Runoff",
+         title: "Swale Sheer Stress",
          fields: [{
-            id: "r_area_acres",
-            label: "R Area (acres)",
+            id: "sw_depth_ft",
+            label: "SW Depth (ft)",
             type: "number"
          }, {
-            id: "'r_intensity_in_hr",
-            label: "R Intensity (hr)",
+            id: "sw_slope_ft_ft",
+            label: "SW Slope (ft)",
             type: "number"
          }]
       },
       "9.3": {
-         title: "Orifice Flow",
+         title: "Pump Horsepower",
          fields: [{
-            id: "o_area_sqft",
-            label: "O Area (sq. ft)",
+            id: "hp_flow_gpm",
+            label: "HP Flow (GPM)",
             type: "number"
          }, {
-            id: "o_head_ft",
-            label: "O Head (ft)",
+            id: "hp_head_ft",
+            label: "HP Head (ft)",
+            type: "number"
+         }, {
+            id: "hp_eff",
+            label: "HP Efficiency",
             type: "number"
          }]
       }
