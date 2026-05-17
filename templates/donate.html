@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="donate-page-container" style="max-width: 600px; margin: 20px auto; background: rgba(255, 255, 255, 0.95); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); font-family: sans-serif; overflow: hidden; display: flex; flex-direction: column; height: 80vh;">
+    
+    <div class="donate-header" style="padding: 20px; border-bottom: 1px solid #eee; text-align: center; background: #ffffff;">
+        <h1 style="margin: 0 0 5px 0; color: #e64980; font-size: 24px;">Support TurtleStew 🐢</h1>
+        <p style="margin: 0; color: #666; font-size: 14px;">Scroll down to see our goals and support our mission.</p>
+    </div>
+
+    <div style="width: 100%; height: 6px; background-color: #e0e0e0; position: relative;">
+        <div id="scrollProgressBar" style="height: 100%; width: 0%; background-color: #e64980; transition: width 0.1s ease-out;"></div>
+    </div>
+
+    <div id="scrollableContent" style="flex: 1; padding: 20px; overflow-y: scroll; scrollbar-width: none; -ms-overflow-style: none;">
+  
+        <div style="margin-bottom: 40px; padding: 20px; background: #f9f9f9; border-left: 4px solid #fcc419; border-radius: 4px;">
+            <h3 style="margin-top: 0; color: #333;">1. Our Mission</h3>
+            <p style="color: #555; line-height: 1.6;">TurtleStew is a free fishing platform for all, intended to provide a comprehensive set of information and services to any and all fishermen. We love fishing and believe that it is a healthy and fun past-time that not only allows people to be happy with their accomplishments, but to connect with others and enjoy life to the fullest. It is important to us that this remains free.</p>
+        </div>
+
+        <div style="margin-bottom: 40px; padding: 20px; background: #f9f9f9; border-left: 4px solid #fcc419; border-radius: 4px;">
+            <h3 style="margin-top: 0; color: #333;">2. Server Infrastructure</h3>
+            <p style="color: #555; line-height: 1.6;">This platform is individual made and owned, done completely in the time between shifts at work and fishing sessions. While we intend for this to be free forever, the owner works a minimum wage job while simultaneously handling production and server costs, which add up a lot faster than they would like. In order to keep it this way, an optional donation would help us maintain this goal. Entirely up to the discretion of the user, any and all support would be greatly appreciated. Thank you kindly!</p>
+        </div>
+
+        <div style="padding: 20px; background: #f9f9f9; border-left: 4px solid #e64980; border-radius: 4px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #333;">3. Make Your Contribution</h3>
+            <p style="color: #555; margin-bottom: 20px;">Select an amount to help fund the project.</p>
+            
+            <form action="{{ url_for('support.donate') }}" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="display: flex; justify-content: space-between; gap: 10px;">
+                    <label style="flex: 1; text-align: center; border: 1px solid #ccc; padding: 12px; border-radius: 6px; cursor: pointer; background: white; font-weight: bold;">
+                        <input type="radio" name="amount" value="5" checked> $5
+                    </label>
+                    <label style="flex: 1; text-align: center; border: 1px solid #ccc; padding: 12px; border-radius: 6px; cursor: pointer; background: white; font-weight: bold;">
+                        <input type="radio" name="amount" value="10"> $10
+                    </label>
+                    <label style="flex: 1; text-align: center; border: 1px solid #ccc; padding: 12px; border-radius: 6px; cursor: pointer; background: white; font-weight: bold;">
+                        <input type="radio" name="amount" value="25"> $25
+                    </label>
+                </div>
+
+                <div>
+                    <label for="custom_amount" style="display: block; margin-bottom: 5px; color: #333; font-size: 14px;">Custom Amount ($):</label>
+                    <input type="number" id="custom_amount" name="custom_amount" min="1" step="any" placeholder="Other amount" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+                </div>
+
+                <button type="submit" style="background: #e64980; color: white; border: none; padding: 14px; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; transition: background 0.2s;">
+                    Complete Donation
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const scrollContainer = document.getElementById('scrollableContent');
+    const progressBar = document.getElementById('scrollProgressBar');
+
+    scrollContainer.addEventListener('scroll', () => {
+        const scrollTop = scrollContainer.scrollTop;
+        const scrollHeight = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+        
+        if (scrollHeight > 0) {
+            const scrolledPercentage = (scrollTop / scrollHeight) * 100;
+            progressBar.style.width = scrolledPercentage + '%';
+        }
+    });
+</script>
+{% endblock %}
