@@ -122,3 +122,56 @@ def export_csv():
     response = Response(generate(), mimetype='text/csv')
     response.headers.set("Content-Disposition", "attachment", filename="traffic_report.csv")
     return response
+
+from flask import jsonify
+
+@analytics_bp.route('/api/recommendations')
+def get_recommendations():
+    user_id = get_current_user_id()
+    
+    try:
+        fallback_recommendations = [
+            {"title": "Trending Support Portal", "url": url_for('tickets.portal'), "reason": "Manage active operational support streams."},
+            {"title": "Main Platform Dashboard", "url": url_for('dash.index'), "reason": "Return back to your primary workstation room."}
+        ]
+    except Exception:
+        fallback_recommendations = [
+            {"title": "Trending Support Portal", "url": "/tickets", "reason": "Manage active operational support streams."},
+            {"title": "Main Platform Dashboard", "url": "/", "reason": "Return back to your primary workstation room."}
+        ]
+    
+    if not user_id:
+        return jsonify(fallback_recommendations)
+
+    top_user_views = db.session.query(
+        UserVisit.endpoint, func.count(UserVisit.endpoint).label('hits')
+    ).filter(UserVisit.user_id == user_id)\
+     .group_by(UserVisit.endpoint)\
+     .order_by(db.text('hits DESC')).limit(3).all()
+
+    if not top_user_views:
+        return jsonify(fallback_recommendations)
+
+    recommendations = []
+    
+    for view in top_user_views:
+        endpoint_name = view.endpoint
+        
+        if 'analytics' in endpoint_name or endpoint_name == request.endpoint:
+            continue
+            
+        try:
+            real_url = url_for(endpoint_name)
+            
+            display_title = endpoint_name.split('.')[-1].replace('_', ' ').title()
+            
+            recommendations.append({
+                "title": f"Open {display_title}",
+                "url": real_url,
+                "reason": "Based on your frequent activity patterns in this space."
+            })
+        except Exception:
+            continue
+
+    final_output = recommendations if recommendations else fallback_recommendations
+    return jsonify(final_output[:3]) 
