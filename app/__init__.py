@@ -87,6 +87,18 @@ def create_app():
     app.register_blueprint(tickets_bp)
     app.register_blueprint(analytics_bp)
 
+    
+    @app.after_request
+    def add_security_headers(response):
+        response.headers['Content-Security-Policy'] = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pyscript.net https://jsdelivr.net; "
+            "style-src 'self' 'unsafe-inline' https://pyscript.net; "
+            "connect-src 'self' https://pyscript.net https://jsdelivr.net https://visualcrossing.com; "
+            "img-src 'self' data: *;"
+        )
+        return response
+
     with app.app_context():
         from app.models.weather.weather_log import ApiWeatherLog
         from app.models.trips.catch import Catch
