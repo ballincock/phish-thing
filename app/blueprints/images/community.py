@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, session, jsonify, redirect, url_for
-from app.models.community import PublicCatch, LikeRecord, Comment, db
+from app.models.images.community import PublicCatch, LikeRecord, Comment, db
 from app.services.gallery_service import GalleryService
 from sqlalchemy import func
 from datetime import datetime
