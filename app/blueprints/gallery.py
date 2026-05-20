@@ -10,7 +10,7 @@ def personal_gallery():
         return redirect(url_for('dash.index'))
     
     images = GalleryImage.query.filter_by(user_id=session['user_id']).order_by(GalleryImage.upload_date.desc()).all()
-    return render_template('gallery.html', images=images)
+    return render_template('gallery/private/gallery.html', images=images)
 
 @gallery_bp.route('/gallery/upload', methods=['POST'])
 def upload_image():
