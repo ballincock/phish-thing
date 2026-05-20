@@ -15,7 +15,7 @@ def view(username):
 
     is_friend = False
     
-    return render_template('gallery_profile.html', 
+    return render_template('gallery/community/gallery_profile.html', 
                            target_user=user, 
                            posts=public_posts, 
                            likes=total_likes,
