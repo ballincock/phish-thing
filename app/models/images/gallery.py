@@ -1,4 +1,4 @@
-from app.models.user import db
+from app.models.user.user import db
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
