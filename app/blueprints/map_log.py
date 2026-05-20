@@ -9,7 +9,7 @@ def view_map():
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
     user = User.query.get(session['user_id'])
-    return render_template('map_log.html', user=user)
+    return render_template('maps/map_log.html', user=user)
 
 @map_log_bp.route('/api/pins', methods=['GET'])
 def get_user_pins():
