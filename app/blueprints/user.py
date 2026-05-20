@@ -12,7 +12,7 @@ def view_profile(username):
     if 'user_id' in session and session['user_id'] == target_user.id:
         is_owner = True
         
-    return render_template('profile.html', user=target_user, is_owner=is_owner)
+    return render_template('profile/profile.html', user=target_user, is_owner=is_owner)
 
 @user_bp.route('/profile/update', methods=['POST'])
 def update_profile():
