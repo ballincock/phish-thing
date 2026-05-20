@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="ticket-container" style="max-width: 800px; margin: 0 auto; padding: 20px; color: #fff; background: rgba(0,0,0,0.8); border-radius: 8px;">
+   <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 20px;">
+      <div>
+         <h2>{{ ticket.title }}</h2>
+         <p>Status: <span style="font-weight:bold; color: {% if ticket.status == 'Open' %}#3498db{% else %}#2ecc71{% endif %};">{{ ticket.status }}</span></p>
+      </div>
+      <div>
+         <a href="{{ url_for('tickets.portal') }}" style="background: #7f8c8d; color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none; margin-right: 5px;">Back to Portal</a>
+         {% if is_admin %}
+         <form method="POST" style="display: inline-block;">
+            <input type="hidden" name="action" value="toggle_status">
+            <button type="submit" style="background: #e67e22; color:white; border:none; padding: 8px 12px; border-radius:4px; cursor:pointer;">
+            Mark as {% if ticket.status == 'Open' %}Resolved{% else %}Open{% endif %}
+            </button>
+         </form>
+         {% endif %}
+      </div>
+   </div>
+   <div style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+      {% for msg in ticket.messages %}
+      <div style="margin-bottom: 15px; padding: 12px 15px; border-radius: 12px; width: fit-content; max-width: 85%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+         {% if msg.sender_id == current_user_id %} 
+         margin-left: auto; 
+         background: #ff7495; 
+         color: #ffffff !important;
+         border-bottom-right-radius: 2px;
+         {% else %} 
+         margin-right: auto; 
+         background: #ffffff; 
+         color: #222222 !important;
+         border-bottom-left-radius: 2px;
+         {% endif %}">
+         <small style="display:block; border-bottom: 1px solid {% if msg.sender_id == current_user_id %}rgba(255,255,255,0.3){% else %}rgba(0,0,0,0.15){% endif %}; padding-bottom: 3px; margin-bottom: 5px; font-size: 11px; font-weight: bold; color: {% if msg.sender_id == current_user_id %}#ffffff{% else %}#555555{% endif %} !important;">
+         <span>{{ msg.sender.username }}</span> {% if msg.sender_id == 1 %}<span style="background: #e74c3c; color: white; padding: 1px 5px; border-radius: 3px; font-size: 9px; margin-left: 5px;">Admin</span>{% endif %} 
+         <span style="float: right; font-weight: normal; opacity: 0.8; margin-left: 15px;">{{ msg.created_at.strftime('%H:%M') }}</span>
+         </small>
+         <p style="margin: 0; word-wrap: break-word; line-height: 1.4; color: inherit;">{{ msg.message }}</p>
+      </div>
+      {% endfor %}
+   </div>
+   <form method="POST">
+      <div style="margin-bottom: 10px;">
+         <textarea name="message" id="replyMsg" maxlength="1000" placeholder="Type your comment or reply here..." required style="width:100%; height: 80px; padding: 8px; border-radius: 4px; border: none;"></textarea>
+         <small id="replyCount" style="color: #bbb;">1000 characters remaining</small>
+      </div>
+      <button type="submit" style="background: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Send Reply</button>
+   </form>
+</div>
+<script>
+   const replyarea = document.getElementById('replyMsg');
+   replyarea.addEventListener('input', function() {
+       const remaining = 1000 - this.value.length;
+       document.getElementById('replyCount').textContent = remaining + " characters remaining";
+   });
+</script>
+{% endblock %}
