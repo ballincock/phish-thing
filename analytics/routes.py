@@ -1,5 +1,8 @@
-from flask import Blueprint, render_template, request, session, abort
-from app.models.user import db, User
+import csv
+from io import StringIO
+from datetime import datetime, timedelta
+from flask import Blueprint, render_template, request, session, abort, Response
+from app.models.user import db, User  
 from analytics.models import UserVisit
 from sqlalchemy import func
 
@@ -10,13 +13,12 @@ def get_current_user_id():
 
 @analytics_bp.before_app_request
 def track_visitor():
-    if request.endpoint in ['static', 'statistics.dashboard'] or not request.endpoint:
+    if request.endpoint in ['static', 'analytics.dashboard', 'analytics.export_csv'] or not request.endpoint:
         return
 
     user_id = get_current_user_id()
-    
     ip_addr = request.headers.get('X-Forwarded-For', request.remote_addr)
-    if ip_addr:
+    if ip_addr and ',' in ip_addr:
         ip_addr = ip_addr.split(',')[0].strip()
 
     visit = UserVisit(
@@ -30,12 +32,15 @@ def track_visitor():
 
 @analytics_bp.route('/admin/statistics')
 def dashboard():
-    user_id = get_current_user_id()
-    if user_id != 1: 
+    if get_current_user_id() != 1:
         abort(403)
 
+    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+    UserVisit.query.filter(UserVisit.timestamp < thirty_days_ago).delete()
+    db.session.commit()
+
     total_page_views = UserVisit.query.count()
-    unique_ips = db.session.query(func.count(UserVisit.ip_address.distinct())).scalar()
+    unique_ips = db.session.query(func.count(UserVisit.ip_address.distinct())).scalar() or 0
     logged_in_clicks = UserVisit.query.filter(UserVisit.user_id.isnot(None)).count()
     
     top_endpoints = db.session.query(
@@ -52,3 +57,38 @@ def dashboard():
         top_pages=top_endpoints,
         recent_logs=recent_visits
     )
+
+@analytics_bp.route('/admin/statistics/export')
+def export_csv():
+    if get_current_user_id() != 1:
+        abort(403)
+
+    all_logs = UserVisit.query.order_by(UserVisit.timestamp.desc()).all()
+
+    def generate():
+        data = StringIO()
+        writer = csv.writer(data)
+        
+        writer.writerow(['Log ID', 'User ID', 'Username', 'Target Route', 'IP Address', 'Browser Agent', 'Timestamp UTC'])
+        yield data.getvalue()
+        data.seek(0)
+        data.truncate(0)
+
+        for log in all_logs:
+            username = log.user.username if log.user_id else 'Guest'
+            writer.writerow([
+                log.id, 
+                log.user_id if log.user_id else 'N/A', 
+                username, 
+                log.endpoint, 
+                log.ip_address, 
+                log.user_agent, 
+                log.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            ])
+            yield data.getvalue()
+            data.seek(0)
+            data.truncate(0)
+
+    response = Response(generate(), mimetype='text/csv')
+    response.headers.set("Content-Disposition", "attachment", filename=f"traffic_report_{datetime.utcnow().strftime('%Y%m%d')}.csv")
+    return response
