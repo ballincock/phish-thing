@@ -16,7 +16,7 @@ def weather_page():
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
         
-    return render_template('current_weather.html', user=user)
+    return render_template('weather/current_weather.html', user=user)
 
 @weather_bp.route('/api/weather/fetch', methods=['POST'])
 def fetch_weather_json():
