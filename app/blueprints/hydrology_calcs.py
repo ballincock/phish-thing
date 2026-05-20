@@ -11,7 +11,7 @@ def hydro_page():
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
     user = User.query.get(session['user_id'])
-    return render_template('hydrology_calcs.html', user=user)
+    return render_template('calculators/hydrology_calcs.html', user=user)
 
 @hydrology_bp.route('/api/hydrology/execute', methods=['POST'])
 def execute_hydro_calc():
