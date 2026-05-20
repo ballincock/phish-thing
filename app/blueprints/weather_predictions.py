@@ -19,7 +19,7 @@ def predictions_page():
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
         
-    return render_template('weather_predictions.html', user=user)
+    return render_template('weather/weather_predictions.html', user=user)
 
 @predictions_bp.route('/api/predictions/fetch', methods=['POST'])
 def fetch_predictions_json():
