@@ -20,7 +20,7 @@ def messages_view():
         return jsonify({"error": "Unauthorized"}), 401
     user = User.query.get(session['user_id'])
     update_user_activity(user.id)
-    return render_template('messages.html', user=user)
+    return render_template('messaging/messages.html', user=user)
 
 @messages_bp.route('/api/messages/sidebar', methods=['GET'])
 def get_sidebar_threads():
