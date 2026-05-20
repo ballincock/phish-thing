@@ -47,7 +47,7 @@ def gallery():
 
     print(f"DEBUG: Found {len(posts_data)} posts for the gallery.") 
             
-    return render_template('community_gallery.html', posts=posts_data, sort=sort)
+    return render_template('gallery/community/community_gallery.html', posts=posts_data, sort=sort)
 
 @community_bp.route('/community/upload', methods=['POST'])
 def public_upload():
