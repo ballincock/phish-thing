@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, abort
-from app.models.user import db, User 
-from app.models.ticket import Ticket, TicketMessage
+from app.models.user.user import db, User 
+from app.models.user.ticket import Ticket, TicketMessage
 
 tickets_bp = Blueprint('tickets', __name__, template_folder='../../templates')
 
