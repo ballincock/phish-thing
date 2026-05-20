@@ -1,66 +1,108 @@
 {% extends "base.html" %}
 {% block content %}
 <div style="max-width: 1100px; margin: 0 auto; padding: 20px; color: #fff; background: rgba(0,0,0,0.85); border-radius: 8px; font-family: sans-serif;">
-    
-    <h2 style="border-bottom: 2px solid #ff7495; padding-bottom: 10px; margin-bottom: 25px;">📉 System Traffic & Visit Analytics</h2>
-
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;">
-        <div style="background: rgba(255,255,255,0.08); padding: 20px; border-radius: 6px; text-align: center; border-left: 4px solid #ff7495;">
-            <h3 style="margin:0; color:#ff7495; font-size: 28px;">{{ total_views }}</h3>
-            <p style="margin:5px 0 0 0; color:#bbb; font-size:14px;">Total Page Loads</p>
-        </div>
-        <div style="background: rgba(255,255,255,0.08); padding: 20px; border-radius: 6px; text-align: center; border-left: 4px solid #3498db;">
-            <h3 style="margin:0; color:#3498db; font-size: 28px;">{{ unique_visitors }}</h3>
-            <p style="margin:5px 0 0 0; color:#bbb; font-size:14px;">Unique Visitor IPs</p>
-        </div>
-        <div style="background: rgba(255,255,255,0.08); padding: 20px; border-radius: 6px; text-align: center; border-left: 4px solid #2ecc71;">
-            <h3 style="margin:0; color:#2ecc71; font-size: 28px;">{{ member_clicks }}</h3>
-            <p style="margin:5px 0 0 0; color:#bbb; font-size:14px;">Authenticated Clicks</p>
-        </div>
-    </div>
-
-    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
-        
-        <div>
-            <h3 style="color:#ff7495; margin-bottom:15px;">🔥 Top 5 Routes</h3>
-            <div style="background: rgba(255,255,255,0.03); border-radius:6px; padding:10px;">
-                {% for endpoint, count in top_pages %}
-                <div style="display:flex; justify-content:space-between; padding:10px; border-bottom: 1px solid #333; font-size:14px;">
-                    <span style="color:#64b5f6; font-family:monospace;">{{ endpoint }}</span>
-                    <span style="font-weight:bold;">{{ count }} hits</span>
-                </div>
-                {% endfor %}
+   <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ff7495; padding-bottom: 10px; margin-bottom: 25px;">
+      <h2 style="margin: 0;">📊 System Traffic & Visit Analytics</h2>
+      <a href="{{ url_for('analytics.export_csv') }}" style="background: #ff7495; color: white; padding: 8px 15px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+      📥 Export Logs to CSV
+      </a>
+   </div>
+   <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;">
+      <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 6px; text-align: center; border-left: 4px solid #ff7495;">
+         <h3 style="margin:0; color:#ff7495; font-size: 28px;">{{ total_views }}</h3>
+         <p style="margin:5px 0 0 0; color:#bbb; font-size:14px;">Total Page Loads</p>
+      </div>
+      <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 6px; text-align: center; border-left: 4px solid #3498db;">
+         <h3 style="margin:0; color:#3498db; font-size: 28px;">{{ unique_visitors }}</h3>
+         <p style="margin:5px 0 0 0; color:#bbb; font-size:14px;">Unique Visitor IPs</p>
+      </div>
+      <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 6px; text-align: center; border-left: 4px solid #2ecc71;">
+         <h3 style="margin:0; color:#2ecc71; font-size: 28px;">{{ member_clicks }}</h3>
+         <p style="margin:5px 0 0 0; color:#bbb; font-size:14px;">Authenticated Clicks</p>
+      </div>
+   </div>
+   <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+      <h3 style="color: #ff7495; margin-top: 0; margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid #333; padding-bottom: 8px;">🔥 Core Platform Insights & Page Popularity</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+         <div>
+            <h4 style="margin: 0 0 15px 0; color: #aaa; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Most Visited Target Pages (Weighted)</h4>
+            {% if top_pages %}
+            {% set max_hits = top_pages[0][1] if top_pages[0][1] > 0 else 1 %}
+            {% for endpoint, count in top_pages %}
+            {% set pct = (count / max_hits) * 100 %}
+            <div style="margin-bottom: 12px;">
+               <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; font-family: monospace;">
+                  <span style="color: #64b5f6;">{{ endpoint }}</span>
+                  <span style="color: #fff; font-weight: bold;">{{ count }} hits</span>
+               </div>
+               <div style="width: 100%; background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; overflow: hidden;">
+                  <div style="width: {{ pct }}%; background: linear-gradient(90deg, #ff7495, #ff477e); height: 100%; border-radius: 4px;"></div>
+               </div>
             </div>
-        </div>
-
-        <div>
-            <h3 style="color:#ff7495; margin-bottom:15px;">⏱️ Recent Traffic Logs (Last 20)</h3>
-            <div style="max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.3); padding:10px; border-radius:6px;">
-                <table style="width:100%; border-collapse: collapse; font-size:13px; text-align:left;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid #444; color:#bbb;">
-                            <th style="padding:8px;">User Context</th>
-                            <th style="padding:8px;">Target Endpoint</th>
-                            <th style="padding:8px;">Visitor Network IP</th>
-                            <th style="padding:8px; text-align:right;">Time (UTC)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for visit in recent_logs %}
-                        <tr style="border-bottom: 1px solid #222; hover {background:#333}">
-                            <td style="padding:8px; color: {% if visit.user_id %}#2ecc71{% else %}#e74c3c{% endif %};">
-                                {% if visit.user_id %}@{{ visit.user.username }}{% else %}Guest{% endif %}
-                            </td>
-                            <td style="padding:8px; font-family:monospace; color:#ff9ebb;">{{ visit.endpoint }}</td>
-                            <td style="padding:8px; color:#aaa;">{{ visit.ip_address }}</td>
-                            <td style="padding:8px; text-align:right; color:#777;">{{ visit.timestamp.strftime('%H:%M:%S') }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            {% endfor %}
+            {% else %}
+            <p style="color: #666; font-size: 13px;">No relative path history generated yet.</p>
+            {% endif %}
+         </div>
+         <div style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+               <h4 style="margin: 0 0 15px 0; color: #aaa; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Platform Distribution Insights</h4>
+               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                  <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; text-align: center;">
+                     <span style="font-size: 11px; color: #888; display: block; margin-bottom: 4px;">Member Ratio</span>
+                     <span style="font-size: 16px; font-weight: bold; color: #2ecc71;">
+                     {% if total_views > 0 %}
+                     {{ ((member_clicks / total_views) * 100) | round(1) }}%
+                     {% else %}
+                     0%
+                     {% endif %}
+                     </span>
+                  </div>
+                  <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; text-align: center;">
+                     <span style="font-size: 11px; color: #888; display: block; margin-bottom: 4px;">Traffic Velocity</span>
+                     <span style="font-size: 14px; font-weight: bold; color: #f1c40f;">
+                     {% if total_views > 500 %} High Activity {% elif total_views > 50 %} Stable {% else %} Initial Boot {% endif %}
+                     </span>
+                  </div>
+               </div>
             </div>
-        </div>
-
-    </div>
+            <div style="background: rgba(255,116,149,0.05); border: 1px dashed rgba(255,116,149,0.2); padding: 12px; border-radius: 6px; margin-top: 15px;">
+               <strong style="font-size: 12px; color: #ff7495; display: block; margin-bottom: 4px;">💡 Admin Action Optimization Tip:</strong>
+               <p style="margin: 0; font-size: 12px; color: #ccc; line-height: 1.4;">
+                  Your most demanded workspace endpoint route right now is <span style="color: #64b5f6; font-family: monospace;">"{{ top_pages[0][0] if top_pages else '/' }}"</span>. Focus system layout updates or custom announcement bars primarily around this route for maximum exposure.
+               </p>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+      <div>
+         <h3 style="color:#ff7495; margin-bottom:15px; font-size: 16px;">⏱️ Recent Real-Time Traffic Stream Records</h3>
+         <div style="max-height: 350px; overflow-y: auto; background: rgba(0,0,0,0.2); padding:10px; border-radius:6px; border: 1px solid #222;">
+            <table style="width:100%; border-collapse: collapse; font-size:13px; text-align:left;">
+               <thead>
+                  <tr style="border-bottom: 2px solid #444; color:#bbb;">
+                     <th style="padding:10px;">User Identifier</th>
+                     <th style="padding:10px;">Target Endpoint</th>
+                     <th style="padding:10px;">Network IP Address</th>
+                     <th style="padding:10px; text-align:right;">Time (UTC)</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  {% for visit in recent_logs %}
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                     <td style="padding:10px; color: {% if visit.user_id %}#2ecc71{% else %}#e74c3c{% endif %}; font-weight: bold;">
+                        {% if visit.user_id %}@{{ visit.user.username }}{% else %}Guest Visitor{% endif %}
+                     </td>
+                     <td style="padding:10px; font-family:monospace; color:#ff9ebb;">{{ visit.endpoint }}</td>
+                     <td style="padding:10px; color:#aaa; font-family: monospace;">{{ visit.ip_address }}</td>
+                     <td style="padding:10px; text-align:right; color:#777;">{{ visit.timestamp.strftime('%H:%M:%S') }}</td>
+                  </tr>
+                  {% endfor %}
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
 </div>
 {% endblock %}
