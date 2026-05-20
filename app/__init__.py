@@ -19,6 +19,8 @@ from app.blueprints.maps.community_map import community_map_bp
 from app.blueprints.calculators.hydrology_calcs import hydrology_bp
 from app.blueprints.support import support
 from app.blueprints.user.tickets import tickets_bp
+from analytics.routes import analytics_bp
+from analytics.models import UserVisit
 
 def create_app():
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
@@ -83,6 +85,7 @@ def create_app():
     app.register_blueprint(hydrology_bp)
     app.register_blueprint(support)
     app.register_blueprint(tickets_bp)
+    app.register_blueprint(analytics_bp)
 
     with app.app_context():
         from app.models.weather.weather_log import ApiWeatherLog
