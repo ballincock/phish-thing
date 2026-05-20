@@ -83,6 +83,9 @@
                 </style>
                 <a href="#support">Support</a>
                 <a href="#donate">Donate</a>
+                {% if session.get('user_id') == 1 %}
+                    <a href="{{ url_for('analytics.dashboard') }}" style="color: #ff7495; font-weight: bold;">📊 Admin Stats</a>
+                {% endif %}
                 <a href="{{ url_for('dash.logout') }}" style="color: #ef4444; font-weight: bold;">Logout</a>
             </div>
         </div>
