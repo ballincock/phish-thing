@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, session, jsonify, redirect, url_for
-from app.models.gallery import GalleryImage, db
+from app.models.images.gallery import GalleryImage, db
 from app.services.gallery_service import GalleryService
 
 gallery_bp = Blueprint('gallery', __name__)
