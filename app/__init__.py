@@ -2,23 +2,23 @@ from flask import Flask
 from flask_talisman import Talisman
 from config import Config
 from app.models.user import db
-from app.blueprints.auth import auth_bp
-from app.blueprints.dashboard import dash_bp
-from app.blueprints.gallery import gallery_bp
-from app.blueprints.user import user_bp
-from app.blueprints.security import security_bp
-from app.blueprints.community import community_bp
-from app.blueprints.gallery_profile import gallery_profile_bp
-from app.blueprints.calcs import fishing_bp
-from app.blueprints.current_weather import weather_bp
-from app.blueprints.historical_weather import historical_bp
-from app.blueprints.weather_predictions import predictions_bp
-from app.blueprints.messages import messages_bp
-from app.blueprints.map_log import map_log_bp
-from app.blueprints.community_map import community_map_bp
-from app.blueprints.hydrology_calcs import hydrology_bp
+from app.blueprints.session.auth import auth_bp
+from app.blueprints.session.dashboard import dash_bp
+from app.blueprints.images.gallery import gallery_bp
+from app.blueprints.user.user import user_bp
+from app.blueprints.user.security import security_bp
+from app.blueprints.images.community import community_bp
+from app.blueprints.user.gallery_profile import gallery_profile_bp
+from app.blueprints.calculators.calcs import fishing_bp
+from app.blueprints.weather.current_weather import weather_bp
+from app.blueprints.weather.historical_weather import historical_bp
+from app.blueprints.weather.weather_predictions import predictions_bp
+from app.blueprints.user.messages import messages_bp
+from app.blueprints.maps.map_log import map_log_bp
+from app.blueprints.maps.community_map import community_map_bp
+from app.blueprints.calculators.hydrology_calcs import hydrology_bp
 from app.blueprints.support import support
-from app.blueprints.tickets import tickets_bp
+from app.blueprints.user.tickets import tickets_bp
 
 def create_app():
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
@@ -85,14 +85,14 @@ def create_app():
     app.register_blueprint(tickets_bp)
 
     with app.app_context():
-        from app.models.weather_log import ApiWeatherLog
-        from app.models.catch import Catch
-        from app.models.trip import Trip
-        from app.models.weather_log_summary import WeatherLog
-        from app.models.message import Message
-        from app.models.block import BlockList
-        from app.models.spot_pin import SpotPin
-        from app.models.community_pin import CommunityPin
+        from app.models.weather.weather_log import ApiWeatherLog
+        from app.models.trips.catch import Catch
+        from app.models.trips.trip import Trip
+        from app.models.weather.weather_log_summary import WeatherLog
+        from app.models.messages.message import Message
+        from app.models.messages.block import BlockList
+        from app.models.map.spot_pin import SpotPin
+        from app.models.map.community_pin import CommunityPin
         db.create_all()
 
     return app
