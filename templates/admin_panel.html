@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="ticket-container" style="max-width: 1000px; margin: 0 auto; padding: 20px; color: #fff; background: rgba(0,0,0,0.8); border-radius: 8px;">
+   <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e74c3c; padding-bottom: 10px; margin-bottom: 20px;">
+      <h2>Master Admin Ticket Control Tower</h2>
+      <a href="{{ url_for('tickets.portal') }}" style="background: #3498db; color: white; padding: 8px 15px; border-radius: 4px; text-decoration: none;">Main Portal View</a>
+   </div>
+   <table style="width: 100%; border-collapse: collapse; text-align: left;">
+      <thead>
+         <tr style="border-bottom: 2px solid #555;">
+            <th style="padding: 10px;">ID</th>
+            <th style="padding: 10px;">Client User</th>
+            <th style="padding: 10px;">Subject Title</th>
+            <th style="padding: 10px;">Status</th>
+            <th style="padding: 10px;">Opened Date</th>
+            <th style="padding: 10px;">Actions</th>
+         </tr>
+      </thead>
+      <tbody>
+         {% if all_tickets %}
+         {% for ticket in all_tickets %}
+         <tr style="border-bottom: 1px solid #444; background: {% if ticket.status == 'Open' %}rgba(52, 152, 219, 0.05){% else %}transparent{% endif %};">
+            <td style="padding: 10px;">#{{ ticket.id }}</td>
+            <td style="padding: 10px;">{{ ticket.client.username }}</td>
+            <td style="padding: 10px;">{{ ticket.title }}</td>
+            <td style="padding: 10px;">
+               <span style="padding: 3px 8px; border-radius: 3px; background: {% if ticket.status == 'Open' %}#3498db{% else %}#2ecc71{% endif %}; font-size: 12px;">
+               {{ ticket.status }}
+               </span>
+            </td>
+            <td style="padding: 10px;">{{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td style="padding: 10px;">
+               <a href="{{ url_for('tickets.view_ticket', ticket_id=ticket.id) }}" style="background: #e67e22; color: #333; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 13px;">Manage Thread</a>
+            </td>
+         </tr>
+         {% endfor %}
+         {% else %}
+         <tr>
+            <td colspan="6" style="padding: 20px; text-align: center; color: #bbb;">No system tickets generated yet.</td>
+         </tr>
+         {% endif %}
+      </tbody>
+   </table>
+</div>
+{% endblock %}
