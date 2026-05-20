@@ -8,7 +8,7 @@ security_bp = Blueprint('security', __name__)
 def settings():
     if 'user_id' not in session: return redirect(url_for('auth.login'))
     user = User.query.get(session['user_id'])
-    return render_template('security_settings.html', user=user)
+    return render_template('profile/security_settings.html', user=user)
 
 @security_bp.route('/settings/update-field', methods=['POST'])
 def update_field():
