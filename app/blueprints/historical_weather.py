@@ -16,7 +16,7 @@ def historical_page():
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
         
-    return render_template('historical_weather.html', user=user)
+    return render_template('weather/historical_weather.html', user=user)
 
 @historical_bp.route('/api/historical/fetch', methods=['POST'])
 def fetch_historical_json():
