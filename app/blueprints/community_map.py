@@ -9,7 +9,7 @@ def view_community_map():
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
     user = User.query.get(session['user_id'])
-    return render_template('community_map.html', user=user)
+    return render_template('maps/community/community_map.html', user=user)
 
 @community_map_bp.route('/api/community/pins', methods=['GET'])
 def get_global_pins():
