@@ -132,12 +132,14 @@ def get_recommendations():
     try:
         fallback_recommendations = [
             {"title": "Trending Support Portal", "url": url_for('tickets.portal'), "reason": "Manage active operational support streams."},
-            {"title": "Main Platform Dashboard", "url": url_for('dash.index'), "reason": "Return back to your primary workstation room."}
+            {"title": "Main Platform Dashboard", "url": url_for('dash.index'), "reason": "Return back to your primary workstation room."},
+            {"title": "Hydrology Calculators", "url": url_for('calcs.hydrology-calcs'), "reason": "Use our hydrology services that encompass a wide scope of hydrology probleming solving calculators."}
         ]
     except Exception:
         fallback_recommendations = [
             {"title": "Trending Support Portal", "url": "/tickets", "reason": "Manage active operational support streams."},
-            {"title": "Main Platform Dashboard", "url": "/", "reason": "Return back to your primary workstation room."}
+            {"title": "Main Platform Dashboard", "url": "/", "reason": "Return back to your primary workstation room."},
+            {"title": "Hydrology Services", "url": "/hydrology-calcs", "reason": "Use our hydrology services that encompass a wide scope of hydrology probleming solving calculators."}
         ]
     
     if not user_id:
