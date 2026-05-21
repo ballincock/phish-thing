@@ -1,3 +1,13 @@
+"""
+REMEMBER_SECURE_COOKIE not yet tested in production
+added DEBUG from production, i dont know why, probably because its not production to begin with
+added SESSION_COOKIE_HTTPONLY not yet tested in production (do i have to keep saying this)
+
+added PERMANENT_SESSION_LIFETIME, JWT_ACCESS_TOKEN_EXPIRES
+
+serious todo here: getting a mailer and not focusing this around localhost usage 
+"""
+
 import os
 
 class Config:
