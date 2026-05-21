@@ -6,6 +6,8 @@ shell context processor added, not tested in production
 before running the app (bottom of file):
    added port, not tested in production
    added host, not tested in production
+
+while running the app in the bottom of the file: specificied the host and port from above
 """
 
 import os
@@ -22,4 +24,9 @@ if __name__ == '__main__':
     host = os.environ.get('HOST', '127.0.0.1')
 
     
-    app.run(debug=True)
+    app.run(
+       host=host, 
+       port=port, 
+       debug=(env == 'dev'),
+       debug=True
+    )
