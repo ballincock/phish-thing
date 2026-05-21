@@ -15,11 +15,11 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
 
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
-    ### MAIL_SERVER = os.environ.get('MAIL_SERVER', '://gmail.com')
-    #MAIL_PORT = int(os.environ.get('MAIL_PORT', 587))
-    #MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'True').lower() in ['true', 'on', '1']
-    #MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    #MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    #MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', 'noreply@yourdomain.com')
-    ###
+    """ MAIL_SERVER = os.environ.get('MAIL_SERVER', '://gmail.com')
+    MAIL_PORT = int(os.environ.get('MAIL_PORT', 587))
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'True').lower() in ['true', 'on', '1']
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', 'noreply@yourdomain.com')
+    """
     
