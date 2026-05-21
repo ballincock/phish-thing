@@ -72,28 +72,4 @@
         </form>
     </div>
 </div>
-
-<style>
-    .profile-wrapper { display: flex; justify-content: center; padding: 40px 10px; }
-    .profile-card { text-align: center; max-width: 500px; width: 100%; }
-    
-    .pfp-container {
-        width: 160px; height: 160px;
-        border-radius: 50%;
-        overflow: hidden;
-        margin: 0 auto 20px;
-        border: 4px solid var(--primary);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .pfp-container img { width: 100%; height: 100%; object-fit: cover; }
-    
-    .handle { color: #64748b; font-size: 0.9rem; margin-top: -15px; }
-    .social-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 15px 0; }
-    .social-links span { background: #f1f5f9; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; }
-    
-    .fishing-details { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
-    .detail-pill { background: #eef2ff; border: 1px solid #c3dafe; border-radius: 8px; padding: 10px; font-size: 0.85rem; }
-
-    @media (max-width: 500px) { .fishing-details { grid-template-columns: 1fr; } }
-</style>
 {% endblock %}
