@@ -1,5 +1,13 @@
-""" Haven't tested importing os or db in production
+""" 
+Haven't tested importing os or db in production
+added env into create_app employment, not tested in production
+
+shell context processor added, not tested in production
+before running the app (bottom of file):
+   added port, not tested in production
+   added host, not tested in production
 """
+
 import os
 from app import create_app, db
 
