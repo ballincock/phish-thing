@@ -48,11 +48,5 @@
       <button type="submit" style="background: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Send Reply</button>
    </form>
 </div>
-<script>
-   const replyarea = document.getElementById('replyMsg');
-   replyarea.addEventListener('input', function() {
-       const remaining = 1000 - this.value.length;
-       document.getElementById('replyCount').textContent = remaining + " characters remaining";
-   });
-</script>
+<script src="{{ url_for('static', filename='js/tickets/tickets.js') }}"></script>
 {% endblock %}
