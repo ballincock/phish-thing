@@ -86,7 +86,6 @@ def create_app():
     app.register_blueprint(support)
     app.register_blueprint(tickets_bp)
     app.register_blueprint(analytics_bp)
-
     
     @app.after_request
     def add_security_headers(response):
