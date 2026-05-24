@@ -1,7 +1,9 @@
 from flask import Flask
 from flask_talisman import Talisman
 from config import Config
+
 from app.models.user import db
+
 from app.blueprints.session.auth import auth_bp
 from app.blueprints.session.dashboard import dash_bp
 from app.blueprints.images.gallery import gallery_bp
@@ -19,8 +21,20 @@ from app.blueprints.maps.community_map import community_map_bp
 from app.blueprints.calculators.hydrology_calcs import hydrology_bp
 from app.blueprints.support import support
 from app.blueprints.user.tickets import tickets_bp
+
 from analytics.routes import analytics_bp
 from analytics.models import UserVisit
+
+from app.mathematics.algebra import Algebra
+from app.mathematics.association import Association
+from app.mathematics.calculus import Calculus
+from app.mathematics.central_tendency import CentralTendency
+from app.mathematics.dispersion import Dispersion
+from app.mathematics.geometry import Geometry
+from app.mathematics.interpolation import Interpolation
+from app.mathematics.kurtosis import Kurtosis
+from app.mathematics.skewness import Skewness
+from app.mathematics.vectors import Vectors
 
 def create_app():
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
@@ -70,6 +84,7 @@ def create_app():
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(dash_bp)
+    
     app.register_blueprint(gallery_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(security_bp)
@@ -85,7 +100,19 @@ def create_app():
     app.register_blueprint(hydrology_bp)
     app.register_blueprint(support)
     app.register_blueprint(tickets_bp)
+    
     app.register_blueprint(analytics_bp)
+    
+    app.register_blueprint(algebra_bp)
+    app.register_blueprint(association_bp)
+    app.register_blueprint(calculus_bp)
+    app.register_blueprint(c_tendency_bp)
+    app.register_blueprint(dispersion_bp)
+    app.register_blueprint(geometry_bp)
+    app.register_blueprint(interpolation_bp)
+    app.register_blueprint(kurtosis_bp)
+    app.register_blueprint(skewness_bp)
+    app.register_blueprint(vectors_bp)
     
     @app.after_request
     def add_security_headers(response):
