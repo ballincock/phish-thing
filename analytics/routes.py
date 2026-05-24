@@ -1,3 +1,12 @@
+"""
+From the necessities of the dashboard and session dashboard necessities, use this file to do so.
+Other variables and table that are likely to need to be constructed are stuff like:
+    > user favorite activities based on page visit duration
+    > use data from within those pages (where they placed spot pins, etc), to make even more detailed and advanced recommendations to user in question.
+
+Models file will be the means by which all of these tables are created, and all handling will be done here via REST
+"""
+
 import csv
 import uuid
 from io import StringIO
