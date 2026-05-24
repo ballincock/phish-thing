@@ -66,13 +66,5 @@
       {% endif %}
    </div>
 </div>
-<script>
-   const textarea = document.getElementById('ticketMsg');
-   if(textarea) {
-       textarea.addEventListener('input', function() {
-           const remaining = 1000 - this.value.length;
-           document.getElementById('charCount').textContent = remaining + " characters remaining";
-       });
-   }
-</script>
+<script src="{{ url_for('static', filename='js/tickets/tickets.js') }}"></script>
 {% endblock %}
