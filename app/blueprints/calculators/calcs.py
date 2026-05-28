@@ -1,3 +1,14 @@
+"""
+To-Do:
+     -> expand on the non data-driven services (advice, gear information, etc - "What should I bring if
+         I am fishing this specific river in this specific region of the united states in late winter.
+
+         add more species, spots, lures, etc and corresponding relations with other species, conditions, etc
+     -> make the scientifically and numerically oriented calculators more rubust, with deleting any computational
+        shortcuts, modifying constants, and increasing accuracy through various means.
+     
+"""
+
 from app.models.user import db
 from app.models.weather_log import ApiWeatherLog
 from app.models.catch import Catch
