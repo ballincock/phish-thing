@@ -25,6 +25,17 @@ from app.blueprints.user.tickets import tickets_bp
 from analytics.routes import analytics_bp
 from analytics.models import UserVisit
 
+from apps.blueprints.calculators.aerodynamics_calcs import Aerodynamics
+from apps.blueprints.calculators.algebraic_calcs import Algebra
+from apps.blueprints.calculators.astronomy_calcs import Astronomy
+from apps.blueprints.calculators.aerodynamics_calcs import Aerodynamics
+from apps.blueprints.calculators.chemistry_calcs import Chemistry
+from apps.blueprints.calculators.climatology_calcs import Climatology
+from apps.blueprints.calculators.engineering_calcs import Engineering
+from apps.blueprints.calculators.forestry_calcs import Forestry
+from apps.blueprints.calculators.geology_calcs import Geology
+from apps.blueprints.calculators.statistics_calcs import Statistics
+
 from app.mathematics.algebra import Algebra
 from app.mathematics.association import Association
 from app.mathematics.calculus import Calculus
@@ -103,6 +114,17 @@ def create_app():
     
     app.register_blueprint(analytics_bp)
     
+    app.register_blueprint(algebra_bp)
+    app.register_blueprint(association_bp)
+    app.register_blueprint(calculus_bp)
+    app.register_blueprint(c_tendency_bp)
+    app.register_blueprint(dispersion_bp)
+    app.register_blueprint(geometry_bp)
+    app.register_blueprint(interpolation_bp)
+    app.register_blueprint(kurtosis_bp)
+    app.register_blueprint(skewness_bp)
+    app.register_blueprint(vectors_bp)
+
     app.register_blueprint(algebra_bp)
     app.register_blueprint(association_bp)
     app.register_blueprint(calculus_bp)
