@@ -19,9 +19,9 @@ def astronomy_page():
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
     user = User.query.get(session['user_id'])
-    return render_template('calculators/aerodynamics_calcs.html', user=user)
+    return render_template('calculators/astronomy_calcs.html', user=user)
 
-@aero_bp.route('/api/aero/execute', methods=['POST'])
+@aero_bp.route('/api/astronomy/execute', methods=['POST'])
 def execute_astronomy_calc():
     if 'user_id' not in session: 
         return jsonify({"error": "Unauthorized"}), 401
