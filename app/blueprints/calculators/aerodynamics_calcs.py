@@ -7,12 +7,12 @@ import math
 import requests
 from datetime import datetime
 from urllib.parse import quote
-from app.models.user import db
+from app.models.user import User, db
 from app.models.weather_log import ApiWeatherLog
 from app.models.weather_log_summary import WeatherLog
  from flask import Blueprint, render_template, request, jsonify
  
-Aerodynamics = Blueprint('aero_bp', __name__)
+Aerodynamics = Blueprint('aero_bp', __name__, template_folder='../templates')
 
 class AeroCalculators:
     @staticmethod
