@@ -19,7 +19,7 @@ def algebra_page():
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
     user = User.query.get(session['user_id'])
-    return render_template('calculators/aerodynamics_calcs.html', user=user)
+    return render_template('calculators/algebra_calcs.html', user=user)
 
 @algebra_bp.route('/api/aero/execute', methods=['POST'])
 def execute_algebra_calc():
