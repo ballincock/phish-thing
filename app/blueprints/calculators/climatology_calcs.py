@@ -14,14 +14,14 @@ from app.models.weather_log_summary import WeatherLog
  
 Climatology = Blueprint('climatology_bp', __name__, template_folder='../templates')
 
-@climatology_bp.route('/hydrology-calc', methods=['GET'])
+@climatology_bp.route('/climatology-calc', methods=['GET'])
 def climatology_page():
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
     user = User.query.get(session['user_id'])
-    return render_template('calculators/aerodynamics_calcs.html', user=user)
+    return render_template('calculators/climatology_calcs.html', user=user)
 
-@climatology_bp.route('/api/aero/execute', methods=['POST'])
+@climatology_bp.route('/api/climatology/execute', methods=['POST'])
 def execute_climatology_calc():
     if 'user_id' not in session: 
         return jsonify({"error": "Unauthorized"}), 401
