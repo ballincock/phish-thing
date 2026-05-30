@@ -10,7 +10,7 @@ from urllib.parse import quote
 from app.models.user import User, db
 from app.models.weather_log import ApiWeatherLog
 from app.models.weather_log_summary import WeatherLog
- from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify
  
 Climatology = Blueprint('climatology_bp', __name__, template_folder='../templates')
 
@@ -31,7 +31,7 @@ def execute_climatology_calc():
     step = str(payload.get('step', '1.1'))     
     data = payload.get('data', {}) 
 
-class ClimatologyCalculators:
+class Climatology:
     @staticmethod
     def get_num(key):
         val = data.get(key)
