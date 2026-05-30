@@ -31,7 +31,7 @@ def execute_astronomy_calc():
     step = str(payload.get('step', '1.1'))     
     data = payload.get('data', {}) 
 
-class AstronomyCalculators:
+class Astronomy:
     @staticmethod
     def get_num(key):
         val = data.get(key)
