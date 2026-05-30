@@ -15,7 +15,7 @@ from app.models.weather_log_summary import WeatherLog
 Chemistry = Blueprint('chemistry_bp', __name__, template_folder='../templates')
 
 @chemistry_bp.route('/chemistry-calc', methods=['GET'])
-def aero_page():
+def chemistry_page():
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
     user = User.query.get(session['user_id'])
@@ -31,7 +31,7 @@ def execute_chemistry_calc():
     step = str(payload.get('step', '1.1'))     
     data = payload.get('data', {}) 
 
-class ChemistryCalculators:
+class Chemistry:
     @staticmethod
     def get_num(key):
         val = data.get(key)
