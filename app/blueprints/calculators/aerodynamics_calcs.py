@@ -14,7 +14,7 @@ from app.models.weather_log_summary import WeatherLog
  
 Aerodynamics = Blueprint('aero_bp', __name__, template_folder='../templates')
 
-@aero_bp.route('/hydrology-calc', methods=['GET'])
+@aero_bp.route('/aero-calc', methods=['GET'])
 def aero_page():
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
