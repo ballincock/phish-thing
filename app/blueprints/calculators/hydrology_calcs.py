@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import Blueprint, render_template, request, session, jsonify
 from app.models.user import User, db
 
-hydrology_bp = Blueprint('hydrology', __name__, template_folder='../templates')
+Hydrology = Blueprint('hydrology_bp', __name__, template_folder='../templates')
 
 @hydrology_bp.route('/hydrology-calc', methods=['GET'])
 def hydro_page():
