@@ -10,18 +10,18 @@ from urllib.parse import quote
 from app.models.user import User, db
 from app.models.weather_log import ApiWeatherLog
 from app.models.weather_log_summary import WeatherLog
- from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify
  
 Engineering = Blueprint('engineering_bp', __name__, template_folder='../templates')
 
-@climatology_bp.route('/hydrology-calc', methods=['GET'])
+@engineering_bp.route('/engineering-calc', methods=['GET'])
 def engineering_page():
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
     user = User.query.get(session['user_id'])
     return render_template('calculators/engineering_calcs.html', user=user)
 
-@climatology_bp.route('/api/engineering/execute', methods=['POST'])
+@engineering_bp.route('/api/engineering/execute', methods=['POST'])
 def execute_engineering_calc():
     if 'user_id' not in session: 
         return jsonify({"error": "Unauthorized"}), 401
@@ -31,7 +31,7 @@ def execute_engineering_calc():
     step = str(payload.get('step', '1.1'))     
     data = payload.get('data', {}) 
 
-class EngineeringCalculators:
+class Engineering:
     @staticmethod
     def get_num(key):
         val = data.get(key)
