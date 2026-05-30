@@ -31,7 +31,7 @@ def execute_algebra_calc():
     step = str(payload.get('step', '1.1'))     
     data = payload.get('data', {}) 
 
-class AlgebraCalculators:
+class Algebra:
     @staticmethod
     def get_num(key):
         val = data.get(key)
