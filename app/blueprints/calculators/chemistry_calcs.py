@@ -10,7 +10,7 @@ from urllib.parse import quote
 from app.models.user import User, db
 from app.models.weather_log import ApiWeatherLog
 from app.models.weather_log_summary import WeatherLog
- from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify
  
 Chemistry = Blueprint('chemistry_bp', __name__, template_folder='../templates')
 
